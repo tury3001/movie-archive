@@ -1,0 +1,16 @@
+{
+  "name": "movie-archive",
+  "version": "1.0.0",
+  "description": "A film CRUD with movies and performers",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "author": "Alejandro A. De Luca",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "http": "^0.0.1-security"
+  }
+}
