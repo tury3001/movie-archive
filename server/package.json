@@ -4,7 +4,7 @@
   "description": "A film CRUD with movies and performers",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test"
+    "test": "jest"
   },
   "author": "Alejandro A. De Luca",
   "license": "ISC",
@@ -12,5 +12,8 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "http": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }
