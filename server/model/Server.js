@@ -1,20 +1,26 @@
 const express = require('express')
 const http = require('http')
+const cors = require('cors');
 
 class Server {
 
     constructor() {
+        
         this.app = express()
         this.server = http.createServer( this.app )
         this.port = process.env.NODE_DOCKER_PORT || 3000
-        
+                
+        this.middlewares()
         this.routes()
     }
 
+    middlewares() {
+        this.app.use( cors() );
+    }
+
     routes() {
-        this.app.get('/', (req, res) => {
-            res.status(200).type('text/plain').send('<h1>Movie Archive</h1>')
-        })
+
+        this.app.use('/api/movie', require('../routes/movie.routes'))
 
         this.app.use( (req, res) => {
             res.type('text/plain')
