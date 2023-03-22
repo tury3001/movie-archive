@@ -1,6 +1,7 @@
 const express = require('express')
 const http = require('http')
-const cors = require('cors');
+const cors = require('cors')
+const { dbConnection } = require('../database/config')
 
 class Server {
 
@@ -12,6 +13,7 @@ class Server {
                 
         this.middlewares()
         this.routes()
+        this.database()
     }
 
     middlewares() {
@@ -27,6 +29,10 @@ class Server {
             res.status(404)
             res.send('404 - Not found')
         })
+    }
+
+    async database() {
+        await dbConnection()
     }
 
     listen() {
