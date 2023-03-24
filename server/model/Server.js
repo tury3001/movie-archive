@@ -13,11 +13,12 @@ class Server {
                 
         this.middlewares()
         this.routes()
-        this.database()
+        // this.database()
     }
 
     middlewares() {
         this.app.use( cors() );
+        this.app.use( express.json() );
     }
 
     routes() {
