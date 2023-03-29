@@ -104,14 +104,36 @@ describe('movie tests', () => {
         expect(res.status).toBe(400);
     });
 
-    async function postToMovieEndpoint(movieData) {
-        return await axios.post(`${baseUrl}/api/movie`, movieData, getAxiosOptions());
-    }
+    test('add new movie with empty synopsis', async() => {
+        let movieData = getMovieData();
+        movieData.synopsis = '';
+        
+        const res = await postToMovieEndpoint(movieData);
+        expect(res.status).toBe(201);
+    });
 
-    function getAxiosOptions() {
-        return {
+    test('add new movie with invalid synopsis', async() => {
+        let movieData = getMovieData();
+        movieData.synopsis = { some: 'thing' };
+
+        const res = await postToMovieEndpoint(movieData);
+        expect(res.status).toBe(400);
+        expect(res.data.errors[0].msg).toBe('Given synopsis is invalid');
+    });
+
+    test('add new movie with more than 512 characters', async() => {
+        let movieData = getMovieData();
+        movieData.synopsis = 's'.repeat(513);
+
+        const res = await postToMovieEndpoint(movieData);
+        expect(res.status).toBe(400);
+        expect(res.data.errors[0].msg).toBe('Synopsis can\'t have more than 512 characters');
+    });
+
+    async function postToMovieEndpoint(movieData) {
+        return await axios.post(`${baseUrl}/api/movie`, movieData, {
             validateStatus: () => true, // avoids axios exception throws
-        }
+        });
     }
 
     function getMovieData() {
@@ -121,7 +143,9 @@ describe('movie tests', () => {
             director: 'Steven Spielberg',
             genres: ['adventure', 'sci-fi'],
             countries: ['United States'],
-            languages: ['english']
+            languages: ['english'],
+            synopsis: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat qui quis est quibusdam architecto harum provident aspernatur odit. Iste id unde asperiores modi ea quam ab nulla aliquid odio! Maxime.',
+            comment: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam cumque quod vel minima fuga eligendi fugit amet, voluptatem id omnis corporis.'
         }
     }
 });
