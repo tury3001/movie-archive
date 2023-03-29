@@ -17,9 +17,21 @@ router.post('/',
         .not().isEmpty().bail()        
         .isInt({ min: 1895, max: 3000 }).withMessage('The year must be a number between 1895 and 3000'),
     check('director')
+        .optional({ checkFalsy: true })
         .isLength({ max: 80 }).withMessage('The director\'s name can\'t have more than 80 characters'),
-    check('genres.*', 'Given genres are invalid').not().isEmpty().not().isNumeric(),
-
+    check('genres.*', 'Given genres are invalid')
+        .not().isEmpty().not().isNumeric(),
+    check('synopsis', 'Given synopsis is invalid')
+        .optional({ checkFalsy: true }).matches(/^[A-Za-z0-9 .,'!-&]+$/)
+        .isLength({ max: 512 }).withMessage('Synopsis can\'t have more than 512 characters'),
+    check('comment', 'Given comment is invalid')
+        .optional({ checkFalsy: true }).matches(/^[A-Za-z0-9 .,'!-&]+$/)
+        .isLength({ max: 512 }).withMessage('Comment can\'t have more than 512 characters'),
+    check('tags', 'Given tags are invalid').optional({ checkFalsy: true }).isArray(),
+    check('tags.*', 'There are invalid tags')
+        .not().isEmpty().withMessage('A tag can\'t be empty')
+        .matches(/^[A-Za-z0-9 .,'!\-&]+$/)
+        .isLength({ max: 60 }).withMessage('Tags can\'t have more than 60 characters each'),
     fieldValidation,
     add
 )
