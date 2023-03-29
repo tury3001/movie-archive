@@ -158,6 +158,55 @@ describe('movie tests', () => {
         expect(res.data.errors[0].msg).toBe('Comment can\'t have more than 512 characters');
     });
 
+    test('add new movie with empty tags', async() => {
+        let movieData = getMovieData();
+        movieData.tags = [];
+
+        const res = await postToMovieEndpoint(movieData);
+
+        expect(res.status).toBe(201);
+    });
+
+    test('add new movie with invalid tags', async() => {
+        let movieData = getMovieData();
+        movieData.tags = { some: 'data'};
+
+        const res = await postToMovieEndpoint(movieData);
+
+        expect(res.status).toBe(400);
+        expect(res.data.errors[0].msg).toBe('Given tags are invalid');
+    });
+
+    test('add new movie with a tag which type is invalid', async () => {
+        let movieData = getMovieData();
+        movieData.tags = [ 2432, { asdas: 'asd' }];
+
+        const res = await postToMovieEndpoint(movieData);
+
+        expect(res.status).toBe(400);
+        expect(res.data.errors[0].msg).toBe('There are invalid tags');
+    });
+
+    test('add new movie with one or more empty tags', async() => {
+        let movieData = getMovieData();
+        movieData.tags = [ 'classic', '' ];
+
+        const res = await postToMovieEndpoint(movieData);
+
+        expect(res.status).toBe(400);
+        expect(res.data.errors[0].msg).toBe('A tag can\'t be empty');
+    });
+
+    test('add new movie with a tag with more than 60 characters', async () => {
+        let movieData = getMovieData();
+        movieData.tags = [ 'classic', 's'.repeat(61) ];
+
+        const res = await postToMovieEndpoint( movieData );
+
+        expect(res.status).toBe(400);
+        expect(res.data.errors[0].msg).toBe('Tags can\'t have more than 60 characters each');
+    });
+
     async function postToMovieEndpoint(movieData) {
         return await axios.post(`${baseUrl}/api/movie`, movieData, {
             validateStatus: () => true, // avoids axios exception throws
@@ -173,7 +222,8 @@ describe('movie tests', () => {
             countries: ['United States'],
             languages: ['english'],
             synopsis: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat qui quis est quibusdam architecto harum provident aspernatur odit. Iste id unde asperiores modi ea quam ab nulla aliquid odio! Maxime.',
-            comment: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam cumque quod vel minima fuga eligendi fugit amet, voluptatem id omnis corporis.'
+            comment: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam cumque quod vel minima fuga eligendi fugit amet, voluptatem id omnis corporis.',
+            tags: ['classic', 'film-noir']
         }
     }
 });
