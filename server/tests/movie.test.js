@@ -121,13 +121,41 @@ describe('movie tests', () => {
         expect(res.data.errors[0].msg).toBe('Given synopsis is invalid');
     });
 
-    test('add new movie with more than 512 characters', async() => {
+    test('add new movie with synopsis that has more than 512 characters', async() => {
         let movieData = getMovieData();
         movieData.synopsis = 's'.repeat(513);
 
         const res = await postToMovieEndpoint(movieData);
         expect(res.status).toBe(400);
         expect(res.data.errors[0].msg).toBe('Synopsis can\'t have more than 512 characters');
+    });
+
+    test('add new movie with empty comment', async() => {
+        let movieData = getMovieData();
+        movieData.comment = '';
+        
+        const res = await postToMovieEndpoint(movieData);
+        expect(res.status).toBe(201);
+    });
+
+    test('add new movie with invalid comment', async() => {
+        let movieData = getMovieData();
+        movieData.comment = { some: 'thing '};
+
+        const res = await postToMovieEndpoint(movieData);
+
+        expect(res.status).toBe(400);
+        expect(res.data.errors[0].msg).toBe('Given comment is invalid')
+    });
+
+    test('add new movie with comment that has more than 512 characters', async() => {
+        let movieData = getMovieData();
+        movieData.comment = 'r'.repeat(513);
+        
+        const res = await postToMovieEndpoint(movieData);
+
+        expect(res.status).toBe(400);
+        expect(res.data.errors[0].msg).toBe('Comment can\'t have more than 512 characters');
     });
 
     async function postToMovieEndpoint(movieData) {

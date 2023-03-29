@@ -24,6 +24,9 @@ router.post('/',
     check('synopsis', 'Given synopsis is invalid')
         .optional({ checkFalsy: true }).matches(/^[A-Za-z0-9 .,'!-&]+$/)
         .isLength({ max: 512 }).withMessage('Synopsis can\'t have more than 512 characters'),
+    check('comment', 'Given comment is invalid')
+        .optional({ checkFalsy: true }).matches(/^[A-Za-z0-9 .,'!-&]+$/)
+        .isLength({ max: 512 }).withMessage('Comment can\'t have more than 512 characters'),
     fieldValidation,
     add
 )
