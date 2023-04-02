@@ -1,12 +1,33 @@
-const axios = require('axios');
 const baseUrl = process.env.DEV_BASE_URL;
+const request = require('supertest');
+const { connect, disconnect, dropCollections } = require('./db-handler');
+const Movie = require('../database/models/Movie');
 
-describe('movie tests', () => {
+beforeAll( async () => {
+    await connect(); 
+});
 
-    test('get to /api/movie should return a 200 status code and json response', async () => {       
-        const res = await axios.get(`${ baseUrl }/api/movie`);
-        expect(res.status).toBe(200);
-        expect(res.data).toEqual({ message: 'ok' });
+afterAll( async () => {
+    await disconnect();
+});
+
+afterEach(async () => {
+    await dropCollections();
+});
+
+describe('add movie tests', () => {
+
+    test('add new movie with all fields ok', async() => {
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(getMovieData())
+            .expect(201);
+
+        // db test
+        // const movie = await Movie( getMovieData());
+        // await movie.save();
+        // expect(await Movie.count()).toBe(1);
+        // const movies = await Movie.find({});
     });
 
     test('add new movie with empty title', async () => {
@@ -14,10 +35,13 @@ describe('movie tests', () => {
         let movieData = getMovieData();
         movieData.title = '';
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('Title can\'t be empty');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( (res) => {
+                expect(res.body.errors[0].msg).toEqual('Title can\'t be empty')
+            });
     });
 
     test('add new movie with a title greater than the max limit', async () => {
@@ -25,193 +49,246 @@ describe('movie tests', () => {
         let movieData = getMovieData();
         movieData.title = 'E'.repeat(81);
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('Title can\'t be longer than 80 characters');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( (res) => {
+                expect(res.body.errors[0].msg).toEqual('Title can\'t be longer than 80 characters')
+            });
     });
 
     test('add new movie with empty year', async () => {
         let movieData = getMovieData();
         movieData.year = null;
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('Year can\'t be empty');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( (res) => {
+                expect(res.body.errors[0].msg).toEqual('Year can\'t be empty')
+            });
     });
 
     test('add new movie with non numeric year', async () => {
         let movieData = getMovieData();
         movieData.year = 'this is not a year';
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('The year must be a number between 1895 and 3000');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( (res) => {
+                expect(res.body.errors[0].msg).toEqual('The year must be a number between 1895 and 3000')
+            });
     });
 
     test('add new movie with a year less than 1895', async() => {
         let movieData = getMovieData();
         movieData.year = 1894;
         
-        const res = await postToMovieEndpoint(movieData);
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('The year must be a number between 1895 and 3000');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( (res) => {
+                expect(res.body.errors[0].msg).toEqual('The year must be a number between 1895 and 3000')
+            });
     });
 
     test('add new movie with empty director', async() => {
         let movieData = getMovieData();
         movieData.director = '';
 
-        const res = await postToMovieEndpoint(movieData);
-        expect(res.status).toBe(201);
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(201);
     });
 
     test('add new movie with a director string longer than 60 characters', async() => {
         let movieData = getMovieData();
         movieData.director = 'E'.repeat(81);
 
-        const res = await postToMovieEndpoint(movieData);
-        expect(res.status).toBe(400);        
-        expect(res.data.errors[0].msg).toBe('The director\'s name can\'t have more than 80 characters');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( (res) => {
+                expect(res.body.errors[0].msg).toEqual('The director\'s name can\'t have more than 80 characters')
+            });
     });
 
     test('add new movie with empty set of genres', async() => {
         let movieData = getMovieData();
         movieData.genres = [];
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(201);
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(201);
     });
 
     test('add new movie with empty genres', async() => {
         let movieData = getMovieData();
         movieData.genres = [ 'western', null ];
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('Given genres are invalid')
+            });
     });
 
     test('add new movie with invalid genres', async() => {
         let movieData = getMovieData();
         movieData.genres = [ 4233, 12 ];
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('Given genres are invalid')
+            });
     });
 
     test('add new movie with empty synopsis', async() => {
         let movieData = getMovieData();
         movieData.synopsis = '';
         
-        const res = await postToMovieEndpoint(movieData);
-        expect(res.status).toBe(201);
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(201);
     });
 
     test('add new movie with invalid synopsis', async() => {
         let movieData = getMovieData();
         movieData.synopsis = { some: 'thing' };
 
-        const res = await postToMovieEndpoint(movieData);
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('Given synopsis is invalid');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('Given synopsis is invalid')
+            });
     });
 
     test('add new movie with synopsis that has more than 512 characters', async() => {
         let movieData = getMovieData();
         movieData.synopsis = 's'.repeat(513);
 
-        const res = await postToMovieEndpoint(movieData);
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('Synopsis can\'t have more than 512 characters');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('Synopsis can\'t have more than 512 characters')
+            });
     });
 
     test('add new movie with empty comment', async() => {
         let movieData = getMovieData();
         movieData.comment = '';
-        
-        const res = await postToMovieEndpoint(movieData);
-        expect(res.status).toBe(201);
+
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(201);
     });
 
     test('add new movie with invalid comment', async() => {
         let movieData = getMovieData();
         movieData.comment = { some: 'thing '};
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('Given comment is invalid')
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('Given comment is invalid')
+            });
     });
 
     test('add new movie with comment that has more than 512 characters', async() => {
         let movieData = getMovieData();
         movieData.comment = 'r'.repeat(513);
         
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('Comment can\'t have more than 512 characters');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('Comment can\'t have more than 512 characters')
+            });
     });
 
     test('add new movie with empty tags', async() => {
         let movieData = getMovieData();
         movieData.tags = [];
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(201);
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(201);
     });
 
     test('add new movie with invalid tags', async() => {
         let movieData = getMovieData();
         movieData.tags = { some: 'data'};
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('Given tags are invalid');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('Given tags are invalid')
+            });
     });
 
     test('add new movie with a tag which type is invalid', async () => {
         let movieData = getMovieData();
         movieData.tags = [ 2432, { asdas: 'asd' }];
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('There are invalid tags');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('There are invalid tags')
+            });
     });
 
     test('add new movie with one or more empty tags', async() => {
         let movieData = getMovieData();
         movieData.tags = [ 'classic', '' ];
 
-        const res = await postToMovieEndpoint(movieData);
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('A tag can\'t be empty');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('A tag can\'t be empty')
+            });
     });
 
     test('add new movie with a tag with more than 60 characters', async () => {
         let movieData = getMovieData();
         movieData.tags = [ 'classic', 's'.repeat(61) ];
 
-        const res = await postToMovieEndpoint( movieData );
-
-        expect(res.status).toBe(400);
-        expect(res.data.errors[0].msg).toBe('Tags can\'t have more than 60 characters each');
+        await request(baseUrl)
+            .post('/api/movie')
+            .send(movieData)
+            .expect(400)
+            .expect( ( res ) => {
+                expect(res.body.errors[0].msg).toEqual('Tags can\'t have more than 60 characters each')
+            });
     });
-
-    async function postToMovieEndpoint(movieData) {
-        return await axios.post(`${baseUrl}/api/movie`, movieData, {
-            validateStatus: () => true, // avoids axios exception throws
-        });
-    }
 
     function getMovieData() {
         return {

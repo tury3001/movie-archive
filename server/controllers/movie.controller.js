@@ -1,4 +1,4 @@
-const Movie = require('../database/models/movie');
+const Movie = require('../database/models/Movie');
 
 const add = async (req, res) => {
 
