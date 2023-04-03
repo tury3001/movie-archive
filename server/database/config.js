@@ -13,7 +13,6 @@ const dbConnect = async () => {
 
             mongod = await MongoMemoryServer.create();
             uri = mongod.getUri();
-            console.log(`Conectando a ${ uri }`);
             conn = await mongoose.connect(uri);
         } else {
 
@@ -22,8 +21,10 @@ const dbConnect = async () => {
                 user: process.env.MONGO_DB_USER,
                 pass: process.env.MONGO_DB_PASSWORD,
             });
+
+            console.log(`Connection established with MongoDB - Host: ${ conn.connection.host }`);
         }
-        console.log(`Connection established with MongoDB - Host: ${ conn.connection.host }`);
+        
     } catch ( error ){
         console.error(error);
         throw new Error('Can\'t establish connection to MongoDB')
