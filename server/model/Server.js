@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
-const { dbConnection } = require('../database/config');
+const { dbConnect } = require('../database/config');
 
 class Server {
 
@@ -32,7 +32,15 @@ class Server {
     }
 
     async database() {
-        await dbConnection();
+        await dbConnect();
+    }
+
+    getApp() {
+        return this.app;
+    }
+
+    getServer() {
+        return this.server;
     }
 
     listen() {
@@ -42,4 +50,4 @@ class Server {
     }
 }
 
-module.exports = Server;
+module.exports = new Server();

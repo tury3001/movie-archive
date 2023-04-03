@@ -17,14 +17,12 @@ const add = async (req, res) => {
     }
 
     try {
-        const movie = await new Movie( data );
+        const movie = new Movie( data );
         await movie.save();
-        console.log('Movie saved!');
     } catch (error) {
         console.log('Movie can\'t be saved');
         console.log(error);
     }
-    
 
     res.status(201).json({ message: 'Movie has been saved'} )
 }

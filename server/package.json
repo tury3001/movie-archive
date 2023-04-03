@@ -1,11 +1,11 @@
 {
   "name": "movie-archive",
   "version": "1.0.0",
-  "description": "A film CRUD with movies and performers",
+  "description": "A film CRUD with movies, directors, actors and actresses",
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./index.js -L",
-    "test": "jest --watch"
+    "test": "jest --watch --testEnvironment=node --runInBand"
   },
   "author": "Alejandro A. De Luca",
   "license": "ISC",
