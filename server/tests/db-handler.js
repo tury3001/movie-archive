@@ -4,15 +4,16 @@ let mongod;
 
 const connect = async () => {
     mongod = await MongoMemoryServer.create();
+    console.log('Mongod URI: ' + mongod.getUri());
     const uri = mongod.getUri();
 
     const mongooseOpts = {
         useNewUrlParser: true,
+        useUnifiedTopology: true,
+        dbName: 'movies'
     };
 
     await mongoose.connect(uri, mongooseOpts);
-
-    return mongoose;
 }
 
 const disconnect = async () => {
