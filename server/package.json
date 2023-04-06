@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./index.js -L",
-    "test": "jest --watch --testEnvironment=node --runInBand"
+    "test": "jest --watch --testEnvironment=node --runInBand",
+    "seed": "node ./database/seeders/Seeder.js"
   },
   "author": "Alejandro A. De Luca",
   "license": "ISC",
