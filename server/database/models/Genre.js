@@ -1,7 +1,7 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require('mongoose')
 
 const Genre = new Schema({
-    name: String
-});
+  name: String
+})
 
-module.exports = model('Genre', Genre);
+module.exports = model('Genre', Genre)

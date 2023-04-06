@@ -1,8 +1,8 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require('mongoose')
 
 const Language = new Schema({
-    name: String,
-    code: String
-});
+  name: String,
+  code: String
+})
 
-module.exports = model('Language', Language);
+module.exports = model('Language', Language)
