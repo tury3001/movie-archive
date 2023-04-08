@@ -1,6 +1,5 @@
 const request = require('supertest')
 const server = require('../model/Server')
-const { describe, test, expect, afterAll, afterEach } = require('jest')
 const { dbDisconnect } = require('../database/config')
 const Movie = require('../database/models/Movie')
 
