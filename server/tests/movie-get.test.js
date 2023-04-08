@@ -1,7 +1,6 @@
 const request = require('supertest')
 const server = require('../model/Server')
 const { dbDisconnect } = require('../database/config')
-const { describe, test, afterAll } = require('jest')
 const app = server.getApp()
 
 afterAll(async () => {
