@@ -1,6 +1,6 @@
 const Artist = require('../database/models/Artist')
 
-const add = async (req, res) =>{
+const add = async (req, res) => {
 
   const { name, bornDate, bornPlace, gender, bio, nationality } = req.body
 
@@ -20,7 +20,7 @@ const add = async (req, res) =>{
     console.log(error)
   }
 
-  res.status(201).send()
+  res.status(201).json({})
 }
 
 module.exports = { add }
