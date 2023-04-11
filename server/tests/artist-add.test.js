@@ -76,6 +76,98 @@ describe('add artist tests', () => {
         })   
   })
 
+  test('add artist with invalid born date', async () => {
+    let artistData = getArtistData()
+    artistData.bornDate = 'some invalid string'
+
+    await request(app)
+      .post('/api/artist')
+      .send(artistData)
+      .expect(400)
+      .expect( (res) => {
+          expect(res.body.errors[0].msg).toBe('Artist born date must be a valid date')
+      })
+  })
+
+  test('add artist with empty born date', async () => {
+      let artistData = getArtistData()
+      artistData.bornDate = null
+
+      await request(app)
+        .post('/api/artist')
+        .send(artistData)
+        .expect(201)
+  })
+
+test('add artist with empty born place', async () => {
+    let artistData = getArtistData()
+    artistData.bornPlace = null
+
+    await request(app)
+      .post('/api/artist')
+      .send(artistData)
+      .expect(201)
+})
+
+test('add artist with born place length longer than 60 characters', async () => {
+    let artistData = getArtistData()
+    artistData.bornPlace = 's'.repeat(61)
+
+    await request(app)
+      .post('/api/artist')
+      .send(artistData)
+      .expect(400)
+      .expect( (res) => {
+        expect(res.body.errors[0].msg).toBe('Artist born place length can\'t be greater than 60 characters')
+      })
+})
+
+test('add artist with empty country', async () => {
+    let artistData = getArtistData()
+    artistData.nationality = null
+
+    await request(app)
+      .post('/api/artist')
+      .send(artistData)
+      .expect(201)
+})
+
+test('add artist with nationality length longer than 60 characters', async () => {
+    let artistData = getArtistData()
+    artistData.nationality = 's'.repeat(61)
+
+    await request(app)
+      .post('/api/artist')
+      .send(artistData)
+      .expect(400)
+      .expect( (res) => {
+        expect(res.body.errors[0].msg).toBe('Artist nationality length can\'t be longer than 60 characters')
+      })
+})
+
+test('add artist with empty bio', async () => {
+    let artistData = getArtistData()
+    artistData.bio = null
+
+    await request(app)
+      .post('/api/artist')
+      .send(artistData)
+      .expect(201)
+})
+
+test('add artist with empty length longer than 512 characters', async () => {
+  let artistData = getArtistData()
+  artistData.bio = 's'.repeat(513)
+
+  await request(app)
+    .post('/api/artist')
+    .send(artistData)
+    .expect(400)
+    .expect( (res) => {
+      expect(res.body.errors[0].msg).toBe('Artist bio can\'t be longer than 512 characters')
+    })
+})
+
 })
 
 function getArtistData() {

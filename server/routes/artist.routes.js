@@ -12,6 +12,10 @@ router.post('/',
   ,
   check('gender').not().isEmpty().withMessage('Artist gender can\'t be empty')
     .isIn(['F', 'M']).withMessage('Artist gender must be either F or M'),
+  check('bornDate').isDate().optional({ nullable: true}).withMessage('Artist born date must be a valid date'),
+  check('bornPlace').isLength({ max: 60 }).withMessage('Artist born place length can\'t be greater than 60 characters'),
+  check('nationality').isLength({ max: 60 }).withMessage('Artist nationality length can\'t be longer than 60 characters'),
+  check('bio').isLength({ max: 512 }).withMessage('Artist bio can\'t be longer than 512 characters'),
   fieldValidation,
   add
 )
