@@ -22,6 +22,7 @@ class Server {
   routes () {
     this.app.use('/api/movie', require('../routes/movie.routes'))
     this.app.use('/api/artist', require('../routes/artist.routes'))
+    this.app.use('/api/countries', require('../routes/countries.routes'))
 
     this.app.use((req, res) => {
       res.type('text/plain')
