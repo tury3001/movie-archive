@@ -1,4 +1,3 @@
-
 const request = require('supertest')
 const server = require('../model/Server')
 const Genre = require('../database/models/Genre')
@@ -21,6 +20,8 @@ describe('genres tests', () => {
       .expect(200)
       .expect( (res) => {
         expect(res.body.length).toBe(12)
+        expect(res.body[0].name).toBe('Action')
+        expect(res.body[4].name).toBe('Documentary')
       })
   })
 })

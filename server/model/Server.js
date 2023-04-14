@@ -24,6 +24,7 @@ class Server {
     this.app.use('/api/artist', require('../routes/artist.routes'))
     this.app.use('/api/countries', require('../routes/countries.routes'))
     this.app.use('/api/genres', require('../routes/genres.routes'))
+    this.app.use('/api/languages', require('../routes/languages.routes'))
 
     this.app.use((req, res) => {
       res.type('text/plain')
