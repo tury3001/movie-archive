@@ -2,11 +2,17 @@ const request = require('supertest')
 const server = require('../model/Server')
 const { dbDisconnect } = require('../database/config')
 const Artist = require('../database/models/Artist')
+const Country = require('../database/models/Country')
+const { countryData } = require('../database/seeders/seed-country')
 
 const app = server.getApp()
 
+beforeAll( async () => {
+  await Country.insertMany(countryData())
+})
+
 afterAll(async () => {
-  await dbDisconnect()
+  await dbDisconnect()  
 })
 
 afterEach(async () => {
@@ -130,6 +136,31 @@ test('add artist with empty country', async () => {
       .post('/api/artist')
       .send(artistData)
       .expect(201)
+})
+
+test('add artist creates a reference to Country in nationality property', async () => {
+  let artistData = getArtistData()
+  artistData.nationality = 'Argentina'
+
+  await request(app)
+    .post('/api/artist')
+    .send(artistData)
+
+  const artist = await Artist.findOne({ name: 'Hugh Jackman'}).populate('nationality')
+  expect(artist.nationality.name).toBe('Argentina')
+})
+
+test('add artist returns error if Country does not exist', async () => {
+  let artistData = getArtistData()
+  artistData.nationality = 'Alto Volta'
+
+  await request(app)
+    .post('/api/artist')
+    .send(artistData)
+    .expect(400)
+    .expect( (res) => {
+      expect(res.body.msg).toBe('Given nationality does not exist')
+    })
 })
 
 test('add artist with nationality length longer than 60 characters', async () => {
