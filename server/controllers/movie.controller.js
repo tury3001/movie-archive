@@ -1,4 +1,5 @@
 const Movie = require('../database/models/Movie')
+const Country = require('../database/models/Country')
 
 const add = async (req, res) => {
   const { title, year, director, genres, countries, languages, comment, synopsis, tags } = req.body
@@ -8,11 +9,15 @@ const add = async (req, res) => {
     year,
     director,
     genre: genres[0],
-    countries: countries[0],
+    countries: [],
     languages: languages[0],
     comment,
     synopsis,
     tags
+  }
+
+  for (countryName of countries) {
+    data.countries.push(await Country.findOne({ name: countryName }))
   }
 
   try {

@@ -2,8 +2,14 @@ const request = require('supertest')
 const server = require('../model/Server')
 const { dbDisconnect } = require('../database/config')
 const Movie = require('../database/models/Movie')
+const Country = require('../database/models/Country')
+const { countryData } = require('../database/seeders/seed-country')
 
 const app = server.getApp()
+
+beforeAll( async () => {
+  await Country.insertMany(countryData())
+})
 
 afterAll(async () => {
   await dbDisconnect()
@@ -324,6 +330,24 @@ describe('add movie tests', () => {
 
     expect(await Movie.count()).toBe(0)
   })
+
+  test('add a new movie links the movie with the country', async () => {
+    const movieData = getMovieData()
+
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(201)
+
+    const movie = await Movie.findOne({ title: 'Jurassic Park'} ).populate('countries')
+
+    expect(movie.countries.length).toBe(1)
+    expect(movie.countries[0].name).toBe('United States')
+  })
+
+  // test('add a new movie with more than one country links the movie with every country')
+  // test('add new movie without country')
+  // test('add new movie with a country does not exist')
 
   function getMovieData () {
     return {
