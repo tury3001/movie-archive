@@ -9,15 +9,11 @@ const add = async (req, res) => {
     year,
     director,
     genre: genres[0],
-    countries: [],
+    countries,
     languages: languages[0],
     comment,
     synopsis,
     tags
-  }
-
-  for (countryName of countries) {
-    data.countries.push(await Country.findOne({ name: countryName }))
   }
 
   try {
