@@ -345,9 +345,25 @@ describe('add movie tests', () => {
     expect(movie.countries[0].name).toBe('United States')
   })
 
-  // test('add a new movie with more than one country links the movie with every country')
+  test('add a new movie with more than one country links the movie with every country', async () => {
+    const movieData = getMovieData()
+    movieData.countries = ['Argentina', 'Spain']
+
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(201)
+
+    const movie = await Movie.findOne({ title: 'Jurassic Park'} ).populate('countries')
+
+    expect(movie.countries.length).toBe(2)
+    expect(movie.countries[0].name).toBe('Argentina')
+    expect(movie.countries[1].name).toBe('Spain')
+  })
+
   // test('add new movie without country')
   // test('add new movie with a country does not exist')
+  // test('add new movie with a duplicated country')
 
   function getMovieData () {
     return {
