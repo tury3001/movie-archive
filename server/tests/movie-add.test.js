@@ -386,6 +386,9 @@ describe('add movie tests', () => {
       .post('/api/movie')
       .send(movieData)
       .expect(400)
+      .expect( (res) => {
+        expect(res.body.message).toBe('Given country doesn\'t exist')
+      })
   })
 
   test('add new movie with a duplicated country', async () => {
@@ -425,15 +428,58 @@ describe('add movie tests', () => {
     const movie = await Movie.findOne({ title: 'Jurassic Park' }).populate('languages')
     expect(movie.languages.length).toBe(1)
     expect(movie.languages[0].name).toBe('English')
+    expect(movie.languages[0].code).toBe('en')
   })
 
-  // test('add new movie with one language')
+  test('add new movie with multiple languages', async () => {
 
-  // test('add new movie with multiple languages')
+    const movieData = getMovieData()
+    movieData.languages = ['English', 'French']
+    
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(201)
 
-  // test('add new movie with duplicated languages')
+    const movie = await Movie.findOne({ title: 'Jurassic Park' }).populate('languages')
+    expect(movie.languages.length).toBe(2)
+    expect(movie.languages[0].name).toBe('English')
+    expect(movie.languages[1].name).toBe('French')
 
-  // test('add new movie with a language that does not exist)
+  })
+
+  test('add new movie with duplicated languages', async () => {
+    const movieData = getMovieData()
+    movieData.languages = ['English', 'Spanish', 'English', 'Spanish', 'French']
+
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(201)
+
+    const movie = await Movie.findOne({ title: 'Jurassic Park'} ).populate('languages')
+
+    expect(movie.languages.length).toBe(3)
+    expect(movie.languages[0].name).toBe('English')
+    expect(movie.languages[1].name).toBe('Spanish')
+    expect(movie.languages[2].name).toBe('French')
+  })
+
+  test('add new movie with duplicated languages', async () => {
+    const movieData = getMovieData()
+    movieData.languages = ['Ergllish']
+
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(400)
+      .expect( (res) => {
+        expect(res.body.message).toBe('Given language doesn\'t exist')
+      })
+  })
+
+
+
 
   function getMovieData () {
     return {

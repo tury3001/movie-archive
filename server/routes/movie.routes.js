@@ -3,6 +3,7 @@ const { check } = require('express-validator')
 const { add } = require('../controllers/movie.controller')
 const { fieldValidation } = require('../middlewares/field-validation')
 const { validateCountries } = require('../middlewares/countries-validation')
+const { validateLanguages } = require('../middlewares/languages-validation')
 
 const router = Router()
 
@@ -33,7 +34,8 @@ router.post('/',
     .not().isEmpty().withMessage('A tag can\'t be empty')
     .matches(/^[A-Za-z0-9 .,'!\-&]+$/)
     .isLength({ max: 60 }).withMessage('Tags can\'t have more than 60 characters each'),
-  validateCountries,
+    validateCountries,
+    validateLanguages,
   fieldValidation,
   add
 )
