@@ -10,7 +10,11 @@ const MovieSchema = new Schema({
     ref: 'Country',
     required: false
   }],
-  language: String,
+  languages: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Language',
+    required: false
+  }],
   synopsis: String,
   comment: String
 })

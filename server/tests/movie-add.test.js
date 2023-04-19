@@ -3,12 +3,15 @@ const server = require('../model/Server')
 const { dbDisconnect } = require('../database/config')
 const Movie = require('../database/models/Movie')
 const Country = require('../database/models/Country')
+const Language = require('../database/models/Language')
 const { countryData } = require('../database/seeders/seed-country')
+const { languageData } = require('../database/seeders/seed-language')
 
 const app = server.getApp()
 
 beforeAll( async () => {
   await Country.insertMany(countryData())
+  await Language.insertMany(languageData())
 })
 
 afterAll(async () => {
@@ -401,6 +404,37 @@ describe('add movie tests', () => {
     expect(movie.countries[1].name).toBe('Spain')
   })
 
+  test('add new movie without language', async () => {
+    const movieData = getMovieData()
+    movieData.languages = []
+
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(201)
+  })
+
+  test('add new movie with one language', async () => {
+    const movieData = getMovieData()
+    
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(201)
+
+    const movie = await Movie.findOne({ title: 'Jurassic Park' }).populate('languages')
+    expect(movie.languages.length).toBe(1)
+    expect(movie.languages[0].name).toBe('English')
+  })
+
+  // test('add new movie with one language')
+
+  // test('add new movie with multiple languages')
+
+  // test('add new movie with duplicated languages')
+
+  // test('add new movie with a language that does not exist)
+
   function getMovieData () {
     return {
       title: 'Jurassic Park',
@@ -408,7 +442,7 @@ describe('add movie tests', () => {
       director: 'Steven Spielberg',
       genres: ['adventure', 'sci-fi'],
       countries: ['United States'],
-      languages: ['english'],
+      languages: ['English'],
       synopsis: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat qui quis est quibusdam architecto harum provident aspernatur odit. Iste id unde asperiores modi ea quam ab nulla aliquid odio! Maxime.',
       comment: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam cumque quod vel minima fuga eligendi fugit amet, voluptatem id omnis corporis.',
       tags: ['classic', 'film-noir']

@@ -1,5 +1,5 @@
 const Movie = require('../database/models/Movie')
-const Country = require('../database/models/Country')
+const Language = require('../database/models/Language')
 
 const add = async (req, res) => {
   const { title, year, director, genres, countries, languages, comment, synopsis, tags } = req.body
@@ -10,11 +10,14 @@ const add = async (req, res) => {
     director,
     genre: genres[0],
     countries,
-    languages: languages[0],
+    languages,
     comment,
     synopsis,
     tags
   }
+
+  const linkLanguage = await Language.findOne({ name: languages[0] })
+  data.languages = [ linkLanguage ]
 
   try {
     const movie = new Movie(data)
