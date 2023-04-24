@@ -2,8 +2,14 @@ const { Router } = require('express')
 const { check } = require('express-validator')
 const { add } = require('../controllers/artist.controller')
 const { fieldValidation } = require('../middlewares/field-validation')
+const Artist = require('../database/models/Artist')
 
 const router = Router()
+
+router.get('/:id', async (req, res) => {
+  const artist = await Artist.findOne({ _id: req.params.id })
+  return res.status(200).json(artist)
+})
 
 router.post('/',
   check('name', 'Artist name can\'t be empty')
