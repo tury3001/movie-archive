@@ -19,9 +19,9 @@ describe('genres tests', () => {
       .get('/api/genres')
       .expect(200)
       .expect( (res) => {
-        expect(res.body.length).toBe(12)
+        expect(res.body.length).toBe(13)
         expect(res.body[0].name).toBe('action')
-        expect(res.body[4].name).toBe('documentary')
+        expect(res.body[4].name).toBe('drama')
       })
   })
 })

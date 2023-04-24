@@ -1,6 +1,7 @@
 const data = () => {
   return [
     { name: 'action' },
+    { name: 'adventure' },
     { name: 'animation' },
     { name: 'comedy' },
     { name: 'drama' },
