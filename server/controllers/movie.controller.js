@@ -7,13 +7,13 @@ const add = async (req, res) => {
     title,
     year,
     director,
-    genre: genres[0],
+    genres,
     countries,
     languages,
     comment,
     synopsis,
     tags
-  }
+  }  
 
   try {
     const movie = new Movie(data)

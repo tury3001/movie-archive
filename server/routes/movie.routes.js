@@ -4,6 +4,7 @@ const { add } = require('../controllers/movie.controller')
 const { fieldValidation } = require('../middlewares/field-validation')
 const { validateCountries } = require('../middlewares/countries-validation')
 const { validateLanguages } = require('../middlewares/languages-validation')
+const { validateGenres } = require('../middlewares/genres-validation')
 
 const router = Router()
 
@@ -21,8 +22,6 @@ router.post('/',
   check('director')
     .optional({ checkFalsy: true })
     .isLength({ max: 80 }).withMessage('The director\'s name can\'t have more than 80 characters'),
-  check('genres.*', 'Given genres are invalid')
-    .not().isEmpty().not().isNumeric(),
   check('synopsis', 'Given synopsis is invalid')
     .optional({ checkFalsy: true }).matches(/^[A-Za-z0-9 .,'!-&]+$/)
     .isLength({ max: 512 }).withMessage('Synopsis can\'t have more than 512 characters'),
@@ -36,6 +35,7 @@ router.post('/',
     .isLength({ max: 60 }).withMessage('Tags can\'t have more than 60 characters each'),
     validateCountries,
     validateLanguages,
+    validateGenres,   
   fieldValidation,
   add
 )

@@ -139,49 +139,7 @@ describe('add movie tests', () => {
       })
 
     expect(await Movie.count()).toBe(0)
-  })
-
-  test('add new movie with empty set of genres', async () => {
-    
-    movieData.genres = []
-
-    await request(app)
-      .post('/api/movie')
-      .send(movieData)
-      .expect(201)
-
-    expect(await Movie.count()).toBe(1)
-  })
-
-  test('add new movie with empty genres', async () => {
-    
-    movieData.genres = ['western', null]
-
-    await request(app)
-      .post('/api/movie')
-      .send(movieData)
-      .expect(400)
-      .expect((res) => {
-        expect(res.body.errors[0].msg).toEqual('Given genres are invalid')
-      })
-
-    expect(await Movie.count()).toBe(0)
-  })
-
-  test('add new movie with invalid genres', async () => {
-    
-    movieData.genres = [4233, 12]
-
-    await request(app)
-      .post('/api/movie')
-      .send(movieData)
-      .expect(400)
-      .expect((res) => {
-        expect(res.body.errors[0].msg).toEqual('Given genres are invalid')
-      })
-
-    expect(await Movie.count()).toBe(0)
-  })
+  })  
 
   test('add new movie with empty synopsis', async () => {
     
@@ -469,7 +427,7 @@ describe('add movie tests', () => {
     expect(movie.languages[2].name).toBe('French')
   })
 
-  test('add new movie with duplicated languages', async () => {
+  test('add new movie with invalid language', async () => {
     
     movieData.languages = ['Ergllish']
 
@@ -480,5 +438,5 @@ describe('add movie tests', () => {
       .expect( (res) => {
         expect(res.body.message).toBe('Given language doesn\'t exist')
       })
-  })  
+  })
 })

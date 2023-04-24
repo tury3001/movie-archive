@@ -4,7 +4,11 @@ const MovieSchema = new Schema({
   title: String,
   year: Number,
   director: String,
-  genre: String,
+  genres: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Genre',
+    required: false
+  }],
   countries: [{
     type: Schema.Types.ObjectId,
     ref: 'Country',

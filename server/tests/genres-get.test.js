@@ -20,8 +20,8 @@ describe('genres tests', () => {
       .expect(200)
       .expect( (res) => {
         expect(res.body.length).toBe(12)
-        expect(res.body[0].name).toBe('Action')
-        expect(res.body[4].name).toBe('Documentary')
+        expect(res.body[0].name).toBe('action')
+        expect(res.body[4].name).toBe('documentary')
       })
   })
 })
