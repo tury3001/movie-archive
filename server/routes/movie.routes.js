@@ -21,7 +21,7 @@ router.post('/',
   check('year', 'Year can\'t be empty')
     .not().isEmpty().bail()
     .isInt({ min: 1895, max: 3000 }).withMessage('The year must be a number between 1895 and 3000'),
-  check('director').optional({ checkFalsy: true }).isMongoId().withMessage('Invalid '),
+  check('director').optional({ checkFalsy: true }).isMongoId().withMessage('Invalid id for director'),
   check('synopsis', 'Given synopsis is invalid')
     .optional({ checkFalsy: true }).matches(/^[A-Za-z0-9 .,'!-&]+$/)
     .isLength({ max: 512 }).withMessage('Synopsis can\'t have more than 512 characters'),

@@ -123,26 +123,66 @@ describe('create new movie with differents sets of artists as cast and director'
       .expect(201)
   })
 
-    // test('create movie with one artist in cast', async () => {
-    //   const artist = await Artist.create(getArtistData())
+    test('create movie with one artist in cast', async () => {
+      const artist = await Artist.create(getArtistData())
 
-    //   const movieData = getMovieData()
-    //   movieData.cast.push(artist._id)
+      const movieData = getMovieData()
+      movieData.cast.push(artist._id)
 
-    //   await request(app)
-    //     .post('/api/movie')
-    //     .send(movieData)
-    //     .expect(201)
+      await request(app)
+        .post('/api/movie')
+        .send(movieData)
+        .expect(201)
         
-    //   const insertedMovie = await Movie.findOne({ title: 'Jurassic Park' }).populate('cast')
-    //   console.log('Inserted movie')
-    //   console.log(insertedMovie)
-    //   expect(insertedMovie.cast.length).toBe(1)
-    // })
+      const insertedMovie = await Movie.findOne({ title: 'Jurassic Park' }).populate('cast')
+      expect(insertedMovie.cast.length).toBe(1)
+    })
+ 
+  test('create movie with many artist in cast', async () => {
+    const artist1 = await Artist.create(getManyArtists()[0])
+    const artist2 = await Artist.create(getManyArtists()[1])
+    const artist3 = await Artist.create(getManyArtists()[2])
 
-  // create movie with many artist in cast
+    const movieData = getMovieData()
+    movieData.cast.push(artist1._id)
+    movieData.cast.push(artist2._id)
+    movieData.cast.push(artist3._id)
 
-  // create movie with invalid artists ids in cast
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(201)
 
-  // create movie with valid artists ids but with unexistent artist in db
+    const insertedMovie = await Movie.findOne({ title: 'Jurassic Park'}).populate('cast')
+    expect(insertedMovie.cast.length).toBe(3)
+  })
+
+  test('create movie with invalid artists ids in cast', async () => {
+    const movieData = getMovieData()
+    movieData.cast.push('invalid-id')
+    movieData.cast.push(4875)
+
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(400)
+  })
+
+  test('create movie with valid artists ids but with unexistent artist in db', async () => {
+    const artist1 = await Artist.create(getManyArtists()[0])
+    const artist2 = await Artist.create(getManyArtists()[1])
+    const artist3 = await Artist.create(getManyArtists()[2])
+
+    const movieData = getMovieData()
+    movieData.cast.push(artist1._id)
+    movieData.cast.push(artist2._id)
+    movieData.cast.push(artist3._id)
+
+    await Artist.findByIdAndDelete(artist2._id)
+
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(400)
+  })
 })

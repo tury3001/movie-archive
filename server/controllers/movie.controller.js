@@ -1,12 +1,13 @@
 const Movie = require('../database/models/Movie')
 
 const add = async (req, res) => {
-  const { title, year, director, genres, countries, languages, comment, synopsis, tags } = req.body
+  const { title, year, director, cast, genres, countries, languages, comment, synopsis, tags } = req.body
 
   const data = {
     title,
     year,
     director,
+    cast,
     genres,
     countries,
     languages,

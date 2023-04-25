@@ -8,7 +8,7 @@ const attachDirector = async (req, res, next) => {
       const artist = await Artist.findById(req.body.director)
 
       if (artist)
-        req.body.artist = artist
+        req.body.director = artist
       else
         return res.status(400).json({ message: 'Given director doesn\'t exist'})      
     }
