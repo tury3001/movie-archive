@@ -115,33 +115,6 @@ describe('add movie tests', () => {
       })
 
     expect(await Movie.count()).toBe(0)
-  })
-
-  test('add new movie with empty director', async () => {
-    
-    movieData.director = ''
-
-    await request(app)
-      .post('/api/movie')
-      .send(movieData)
-      .expect(201)
-
-    expect(await Movie.count()).toBe(1)
-  })
-
-  test('add new movie with a director string longer than 60 characters', async () => {
-    
-    movieData.director = 'E'.repeat(81)
-
-    await request(app)
-      .post('/api/movie')
-      .send(movieData)
-      .expect(400)
-      .expect((res) => {
-        expect(res.body.errors[0].msg).toEqual('The director\'s name can\'t have more than 80 characters')
-      })
-
-    expect(await Movie.count()).toBe(0)
   })  
 
   test('add new movie with empty synopsis', async () => {

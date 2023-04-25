@@ -32,7 +32,7 @@ afterEach(async () => {
   await Movie.deleteMany({})
 })
 
-describe('add new movie with differents sets of genres', () => {
+describe('create new movie with differents sets of genres', () => {
   test('add a new movie links the movie with the country', async () => {    
 
     await request(app)

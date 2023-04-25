@@ -32,7 +32,7 @@ afterEach(async () => {
   await Movie.deleteMany({})
 })
 
-describe('add new movie with differents sets of languages', () => {
+describe('create new movie with differents sets of languages', () => {
 
   test('add new movie without language', async () => {
     

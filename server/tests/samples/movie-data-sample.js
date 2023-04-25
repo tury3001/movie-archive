@@ -2,7 +2,8 @@ function getMovieData() {
   return {
     title: 'Jurassic Park',
     year: 1993,
-    director: 'Steven Spielberg',
+    director: null,
+    cast: [],
     genres: ['adventure', 'sci-fi'],
     countries: ['United States'],
     languages: ['English'],

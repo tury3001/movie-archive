@@ -1,0 +1,23 @@
+const Artist = require('../database/models/Artist')
+
+const attachDirector = async (req, res, next) => {
+
+  try {
+
+    if (req.body.director) {
+      const artist = await Artist.findById(req.body.director)
+
+      if (artist)
+        req.body.artist = artist
+      else
+        return res.status(400).json({ message: 'Given director doesn\'t exist'})      
+    }
+
+  } catch (error) {
+    return res.status(400).json({ message: 'There was an error trying to get the director'})
+  }
+
+  next()
+}
+
+module.exports = { attachDirector }

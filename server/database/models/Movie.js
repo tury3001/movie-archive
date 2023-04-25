@@ -3,7 +3,16 @@ const { Schema, model } = require('mongoose')
 const MovieSchema = new Schema({
   title: String,
   year: Number,
-  director: String,
+  director: {
+    type: Schema.Types.ObjectId,
+    ref: 'Artist',
+    required: false
+  },
+  cast: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Artist',
+    required: false
+  }],
   genres: [{
     type: Schema.Types.ObjectId,
     ref: 'Genre',

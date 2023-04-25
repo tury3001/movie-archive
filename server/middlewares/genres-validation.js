@@ -8,7 +8,7 @@ const validateGenres = async(req, res, next) => {
   let objGenre
   let genreExists = true
 
-  if (req.body.genres.length > 0) {
+  if (req.body.genres && req.body.genres.length > 0) {
     for (let genre of genres) {
       objGenre = await Genre.findOne({ name: genre })
       if (objGenre)
