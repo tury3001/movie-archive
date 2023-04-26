@@ -7,7 +7,7 @@ const attachCast = async (req, res, next) => {
   if (req.body.cast && req.body.cast.length > 0) {
 
     if (req.body.cast.some( id => !mongoose.isValidObjectId(id)))
-      return res.status(400).json({ message: 'Given cast have invalid ids'})
+      return res.status(400).json({ msg: 'Given cast have invalid ids'})
     
     let artists = [];
     for (let artistId of req.body.cast) {
@@ -15,7 +15,7 @@ const attachCast = async (req, res, next) => {
     }
 
     if (artists.some( artist => artist === null))
-      return res.status(400).json({ message: 'Given artist doesn\'t exist'})
+      return res.status(400).json({ msg: 'Given artist doesn\'t exist'})
 
     req.body.cast = artists
   }

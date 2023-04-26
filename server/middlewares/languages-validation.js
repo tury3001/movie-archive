@@ -18,7 +18,7 @@ const validateLanguages = async (req, res, next) => {
   }
 
   if (!allLanguagesExist)
-    return res.status(400).json({ message: 'Given language doesn\'t exist' })
+    return res.status(400).json({ msg: 'Given language doesn\'t exist' })
   
   req.body.languages = objectSchemaLanguages
 

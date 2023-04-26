@@ -39,7 +39,7 @@ describe('get artist tests', () => {
         await request(app).get(`/api/artist/asdaj8374`)
             .expect(400)
             .expect( res => {
-                expect(res.body.message).toBe('Given artist doesn\'t exist')
+                expect(res.body.msg).toBe('Given artist doesn\'t exist')
             })
     })
 })

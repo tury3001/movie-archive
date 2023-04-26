@@ -10,11 +10,11 @@ const attachDirector = async (req, res, next) => {
       if (artist)
         req.body.director = artist
       else
-        return res.status(400).json({ message: 'Given director doesn\'t exist'})      
+        return res.status(400).json({ msg: 'Given director doesn\'t exist'})      
     }
 
   } catch (error) {
-    return res.status(400).json({ message: 'There was an error trying to get the director'})
+    return res.status(400).json({ msg: 'There was an error trying to get the director'})
   }
 
   next()

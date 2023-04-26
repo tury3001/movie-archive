@@ -24,7 +24,7 @@ const add = async (req, res) => {
     console.log(error)
   }
 
-  res.status(201).json({ message: 'Movie has been saved' })
+  res.status(201).json({ msg: 'Movie has been saved' })
 }
 
 module.exports = { add }

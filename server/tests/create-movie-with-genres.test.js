@@ -55,7 +55,7 @@ describe('create new movie with differents sets of genres', () => {
       .send(movieData)
       .expect(400)
       .expect((res) => {
-        expect(res.body.message).toEqual('Given genre doesn\'t exist')
+        expect(res.body.msg).toEqual('Given genre doesn\'t exist')
       })
 
     expect(await Movie.count()).toBe(0)
@@ -70,7 +70,7 @@ describe('create new movie with differents sets of genres', () => {
       .send(movieData)
       .expect(400)
       .expect((res) => {
-        expect(res.body.message).toEqual('Given genre doesn\'t exist')
+        expect(res.body.msg).toEqual('Given genre doesn\'t exist')
       })
 
     expect(await Movie.count()).toBe(0)
@@ -124,7 +124,7 @@ describe('create new movie with differents sets of genres', () => {
       .send(movieData)
       .expect(400)
       .expect((res) => {
-        expect(res.body.message).toEqual('Given genre doesn\'t exist')
+        expect(res.body.msg).toEqual('Given genre doesn\'t exist')
       })
 
     expect(await Movie.count()).toBe(0)

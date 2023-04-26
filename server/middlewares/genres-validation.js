@@ -19,7 +19,7 @@ const validateGenres = async(req, res, next) => {
   }
 
   if (!genreExists)
-    return res.status(400).json({ message: 'Given genre doesn\'t exist' })
+    return res.status(400).json({ msg: 'Given genre doesn\'t exist' })
 
   req.body.genres = objectGenres
 

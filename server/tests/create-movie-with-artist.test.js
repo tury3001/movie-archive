@@ -85,7 +85,7 @@ describe('create new movie with differents sets of artists as cast and director'
       .send(movieData)
       .expect(400)
       .expect( res => {
-        expect(res.body.message).toBe('Given director doesn\'t exist')
+        expect(res.body.msg).toBe('Given director doesn\'t exist')
       })
   })
 
@@ -99,7 +99,7 @@ describe('create new movie with differents sets of artists as cast and director'
       .send(movieData)
       .expect(400)
       .expect( res => {
-        expect(res.body.message).toBe('There was an error trying to get the director')
+        expect(res.body.errors[0].msg).toBe('Invalid id for director')
       })
   })
 

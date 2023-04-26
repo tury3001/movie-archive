@@ -99,7 +99,7 @@ describe('create new movie with differents sets of languages', () => {
       .send(movieData)
       .expect(400)
       .expect( (res) => {
-        expect(res.body.message).toBe('Given language doesn\'t exist')
+        expect(res.body.msg).toBe('Given language doesn\'t exist')
       })
   })
 })

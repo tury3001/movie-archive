@@ -85,7 +85,7 @@ describe('create new movie with differents sets of genres', () => {
       .send(movieData)
       .expect(400)
       .expect( (res) => {
-        expect(res.body.message).toBe('Given country doesn\'t exist')
+        expect(res.body.msg).toBe('Given country doesn\'t exist')
       })
   })
 

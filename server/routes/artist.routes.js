@@ -13,7 +13,7 @@ router.get('/:id', async (req, res) => {
     const artist = await Artist.findOne({ _id: req.params.id })
     return res.status(200).json(artist)
   } catch ( error ) {
-    return res.status(400).json({ message: 'Given artist doesn\'t exist' })
+    return res.status(400).json({ msg: 'Given artist doesn\'t exist' })
   }  
 })
 

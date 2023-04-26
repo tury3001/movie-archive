@@ -18,7 +18,7 @@ const validateCountries = async (req, res, next) => {
   }
 
   if (!allCountriesExist)
-    return res.status(400).json({ message: 'Given country doesn\'t exist' })
+    return res.status(400).json({ msg: 'Given country doesn\'t exist' })
   
   req.body.countries = objectSchemaCountries
 
