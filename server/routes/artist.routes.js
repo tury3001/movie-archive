@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
-const { add } = require('../controllers/artist.controller')
+const { add, update } = require('../controllers/artist.controller')
 const { fieldValidation } = require('../middlewares/field-validation')
 const Artist = require('../database/models/Artist')
 const { attachNationality } = require('../middlewares/attach-nationality')
@@ -45,5 +45,11 @@ router.post('/',
   artistAlreadyExists,
   add
 )
+
+router.patch('/:id',
+  check('name', 'Artist name can\'t be empty')
+    .not().isEmpty(),
+    fieldValidation
+, update)
 
 module.exports = router
