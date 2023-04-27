@@ -20,7 +20,17 @@ const add = async (req, res) => {
     console.log(error)
   }
 
-  res.status(201).json({})
+  res.status(201).json({ msg: 'Artist created' })
 }
 
-module.exports = { add }
+const update = async (req, res) => {
+
+  const { name, bornDate, bornPlace, gender, bio, nationality } = req.body
+
+  let data = { name }
+
+  await Artist.findByIdAndUpdate(req.params.id, data)
+  res.status(204).json({ msg: 'Artist updated' })
+}
+
+module.exports = { add, update }
