@@ -34,22 +34,34 @@ router.post('/',
   check('bornPlace')
     .isLength({ max: 60 })
     .withMessage('Artist born place length can\'t be greater than 60 characters'),
-  check('nationality')
-    .isLength({ max: 60 })
-    .withMessage('Artist nationality length can\'t be longer than 60 characters'),
   check('bio')
     .isLength({ max: 512 })
     .withMessage('Artist bio can\'t be longer than 512 characters'),
   fieldValidation,
   attachNationality,
-  artistAlreadyExists,
-  add
-)
+  artistAlreadyExists
+, add)
 
 router.patch('/:id',
   check('name', 'Artist name can\'t be empty')
-    .not().isEmpty(),
-    fieldValidation
+    .optional()
+    .not().isEmpty()
+    .isLength({ min: 1, max: 60 })
+    .withMessage('Artist name can\'t have more than 60 characters'),
+  check('gender')
+    .optional()
+    .isIn(['F', 'M'])
+    .withMessage('Artist gender must be either F or M'),
+  check('bornDate')
+    .optional({ checkFalsy: true })
+    .isDate()
+    .withMessage('Artist born date must be a valid date'),
+  check('bornPlace')
+    .optional()
+    .isLength({ max: 60 })
+    .withMessage('Artist born place length can\'t be greater than 60 characters'),
+  attachNationality,
+  fieldValidation
 , update)
 
 module.exports = router

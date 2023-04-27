@@ -12,7 +12,7 @@ const { countryData } = require('../database/seeders/seed-country')
 const { languageData } = require('../database/seeders/seed-language')
 
 const getMovieData = require('./samples/movie-data-sample')
-const { getManyArtists, getArtistData } = require('./samples/artist-data-sample')
+const { getManyArtists } = require('./samples/artist-data-sample')
 
 const app = server.getApp()
 
@@ -41,7 +41,8 @@ describe('create new movie with differents sets of artists as cast and director'
 
   test('create movie with existing director', async () => {
 
-    const artist = await Artist.create( getManyArtists()[2] )
+    const dataArtist = await getOneArtist(2)
+    const artist = await Artist.create(dataArtist)
     const movieData = getMovieData()
 
     movieData.director = artist._id.valueOf()
@@ -72,7 +73,8 @@ describe('create new movie with differents sets of artists as cast and director'
 
   test('create movie with valid artist id but nonexistent director', async () => {
 
-    const artist = await Artist.create(getManyArtists()[2])
+    const dataArtist = await getOneArtist(2)
+    const artist = await Artist.create(dataArtist)
     const artistId = artist._id.valueOf()
 
     const movieData = getMovieData()
@@ -124,7 +126,8 @@ describe('create new movie with differents sets of artists as cast and director'
   })
 
     test('create movie with one artist in cast', async () => {
-      const artist = await Artist.create(getArtistData())
+      const dataArtist = await getOneArtist(0)
+      const artist = await Artist.create(dataArtist)
 
       const movieData = getMovieData()
       movieData.cast.push(artist._id)
@@ -139,9 +142,15 @@ describe('create new movie with differents sets of artists as cast and director'
     })
  
   test('create movie with many artist in cast', async () => {
-    const artist1 = await Artist.create(getManyArtists()[0])
-    const artist2 = await Artist.create(getManyArtists()[1])
-    const artist3 = await Artist.create(getManyArtists()[2])
+
+    const dataArtist1 = await getOneArtist(0)
+    const artist1 = await Artist.create(dataArtist1)
+
+    const dataArtist2 = await getOneArtist(1)
+    const artist2 = await Artist.create(dataArtist2)
+
+    const dataArtist3 = await getOneArtist(2)
+    const artist3 = await Artist.create(dataArtist3)
 
     const movieData = getMovieData()
     movieData.cast.push(artist1._id)
@@ -169,9 +178,15 @@ describe('create new movie with differents sets of artists as cast and director'
   })
 
   test('create movie with valid artists ids but with unexistent artist in db', async () => {
-    const artist1 = await Artist.create(getManyArtists()[0])
-    const artist2 = await Artist.create(getManyArtists()[1])
-    const artist3 = await Artist.create(getManyArtists()[2])
+
+    const dataArtist1 = await getOneArtist(0)
+    const artist1 = await Artist.create(dataArtist1)
+
+    const dataArtist2 = await getOneArtist(1)
+    const artist2 = await Artist.create(dataArtist2)
+
+    const dataArtist3 = await getOneArtist(2)
+    const artist3 = await Artist.create(dataArtist3)
 
     const movieData = getMovieData()
     movieData.cast.push(artist1._id)
@@ -186,3 +201,9 @@ describe('create new movie with differents sets of artists as cast and director'
       .expect(400)
   })
 })
+
+async function getOneArtist(n) {
+    const artist = getManyArtists()[n]
+    artist.nationality = (await Country.findOne({ name: artist.nationality }))._id
+    return artist
+}

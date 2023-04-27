@@ -25,11 +25,21 @@ const add = async (req, res) => {
 
 const update = async (req, res) => {
 
-  const { name, bornDate, bornPlace, gender, bio, nationality } = req.body
+  const { name, bornDate, bornPlace, gender, nationality, bio } = req.body
 
-  let data = { name }
+  const artist = await Artist.findById(req.params.id)
 
-  await Artist.findByIdAndUpdate(req.params.id, data)
+  artist.name = name ?? artist.name
+  artist.gender = gender ?? artist.gender
+  artist.bornDate = bornDate ?? artist.bornDate
+  artist.bornPlace = bornPlace ?? artist.bornPlace
+
+  if ('nationality' in req.body) {
+    artist.nationality = nationality === '' ? null : nationality
+  }
+
+  await artist.save()
+
   res.status(204).json({ msg: 'Artist updated' })
 }
 

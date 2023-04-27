@@ -4,7 +4,7 @@ const { dbDisconnect } = require('../database/config')
 const Country = require('../database/models/Country')
 const Artist = require('../database/models/Artist')
 const { countryData } = require('../database/seeders/seed-country')
-const { getArtistData } = require('./samples/artist-data-sample')
+const { getManyArtists } = require('./samples/artist-data-sample')
 
 const app = Server.getApp()
 
@@ -20,7 +20,8 @@ describe('get artist tests', () => {
 
     test('get one artist given its correct id', async () => {
 
-        const artist = await Artist.create( getArtistData() )
+        const dataArtist = await getOneArtist(0)
+        const artist = await Artist.create(dataArtist)
 
         await request(app).get(`/api/artist/${ artist._id }`)
             .expect(200)
@@ -34,7 +35,8 @@ describe('get artist tests', () => {
 
     test('get one artist with invalid id', async () => {
 
-        await Artist.create( getArtistData() )
+        const dataArtist = await getOneArtist(0)
+        const artist = await Artist.create(dataArtist)
 
         await request(app).get(`/api/artist/asdaj8374`)
             .expect(400)
@@ -43,3 +45,9 @@ describe('get artist tests', () => {
             })
     })
 })
+
+async function getOneArtist(n) {
+    const artist = getManyArtists()[n]
+    artist.nationality = (await Country.findOne({ name: artist.nationality }))._id
+    return artist
+}
