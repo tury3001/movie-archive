@@ -14,7 +14,7 @@ router.get('/:id', async (req, res) => {
     return res.status(200).json(artist)
   } catch ( error ) {
     return res.status(400).json({ msg: 'Given artist doesn\'t exist' })
-  }  
+  }
 })
 
 router.post('/',
@@ -43,6 +43,9 @@ router.post('/',
 , add)
 
 router.patch('/:id',
+  check('id', 'Given id is invalid')
+    .isMongoId()
+  ,
   check('name', 'Artist name can\'t be empty')
     .optional()
     .not().isEmpty()
@@ -60,6 +63,10 @@ router.patch('/:id',
     .optional()
     .isLength({ max: 60 })
     .withMessage('Artist born place length can\'t be greater than 60 characters'),
+  check('bio')
+    .optional()
+    .isLength({ max: 512 })
+    .withMessage('Artist bio can\'t be longer than 512 characters'),
   attachNationality,
   fieldValidation
 , update)

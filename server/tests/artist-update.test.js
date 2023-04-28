@@ -32,7 +32,33 @@ afterAll( async () => {
 
 describe('update artist tests', () => {
 
-    // tests with invalid _id
+    test('update artist with invalid id', async () => {
+        await request(app)
+            .patch('/api/artist/invalid-id')
+            .send({ name: 'William Shatner' })
+            .expect(400)
+            .expect( res => {
+                expect(res.body.errors[0].msg).toBe('Given id is invalid')
+            })
+    })
+
+    test('update artist with valid id but unexistent artist', async () => {
+
+        let artistToUpdate = getManyArtists()[1]
+        artistToUpdate.nationality = await Country.findOne({ name: artistToUpdate.nationality })._id
+
+        const { _id } = await Artist.create(artistToUpdate)
+
+        await Artist.deleteOne(_id)
+
+        await request(app)
+            .patch(`/api/artist/${ _id }`)
+            .send({ name: 'William Shatner' })
+            .expect(400)
+            .expect( res => {
+                expect(res.body.msg).toBe('Artist does not exist')
+            })
+    })
 
     test('update artist name with valid data', async () => {
 
@@ -138,6 +164,17 @@ describe('update artist tests', () => {
         expect(artist.bornPlace).toBe('Mirfield, United Kingdom')
     })
 
+    test('update artist with without born date', async () => {
+        await request(app)
+            .patch(`/api/artist/${ artistId }`)
+            .send({ name: 'Ricardo Darin' })
+            .expect(204)
+
+        const artist = await Artist.findById(artistId)
+        expect(artist.name).toBe('Ricardo Darin')
+        expect(artist.bornDate).not.toBeNull()
+    })
+
     test('update artist changing its born date', async () => {
         await request(app)
             .patch(`/api/artist/${ artistId }`)
@@ -191,8 +228,69 @@ describe('update artist tests', () => {
         expect(artist.nationality).toBeNull()
     })
 
-    // test('update artist with unexistent country in nationality')
+    test('update artist with unexistent country in nationality', async () => {
+        await request(app)
+            .patch(`/api/artist/${ artistId }`)
+            .send({ nationality: 'Wakanda' })
+            .expect(400)
+            .expect( res => {
+                expect(res.body.msg).toBe('Given nationality does not exist')
+            })
 
+        const artist = await Artist.findById(artistId).populate('nationality')
+        expect(artist.name).toBe('Patrick Stewart')
+        expect(artist.nationality.name).toBe('United Kingdom')
+    })
 
-    // test('update artist changing its nationality')
+    test('update artist changing its nationality', async () => {
+        await request(app)
+            .patch(`/api/artist/${ artistId }`)
+            .send({ nationality: 'France' })
+            .expect(204)
+
+        const artist = await Artist.findById(artistId).populate('nationality')
+        expect(artist.name).toBe('Patrick Stewart')
+        expect(artist.nationality.name).toBe('France')
+    })
+
+    test('update artist with empty bio is possible', async () => {
+        await request(app)
+            .patch(`/api/artist/${ artistId }`)
+            .send({ bio: 'A new bio' })
+            .expect(204)
+
+        const artist = await Artist.findById(artistId)
+        expect(artist.bio).toBe('A new bio')        
+    })
+
+    test('update artist with bio greater than 512 characters is not possible', async () => {
+        await request(app)
+            .patch(`/api/artist/${ artistId }`)
+            .send({ bio: 's'.repeat(513) })
+            .expect(400)
+            .expect( res => {
+                expect(res.body.errors[0].msg).toBe('Artist bio can\'t be longer than 512 characters')
+            })
+    })
+
+    test('update artist without bio maintains bio the same', async () => {
+        await request(app)
+            .patch(`/api/artist/${ artistId }`)
+            .send({ name: 'Ricardo Darin' })
+            .expect(204)
+
+        const artist = await Artist.findById(artistId)
+        expect(artist.name).toBe('Ricardo Darin')
+        expect(artist.bio).toBe('Stewart gained stardom for his leading role as Captain Jean-Luc Picard in Star Trek: The Next Generation (1987–94), its subsequent films, and Star Trek: Picard (2020–23).')
+    })
+
+    test('update artist bio with valid bio', async () => {
+        await request(app)
+            .patch(`/api/artist/${ artistId }`)
+            .send({ bio: 'A different bio' })
+            .expect(204)
+
+        const artist = await Artist.findById(artistId)
+        expect(artist.bio).toBe('A different bio')
+    })
 })

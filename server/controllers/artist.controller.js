@@ -29,10 +29,14 @@ const update = async (req, res) => {
 
   const artist = await Artist.findById(req.params.id)
 
+  if (!artist)
+    return res.status(400).json({ msg: 'Artist does not exist' })
+
   artist.name = name ?? artist.name
   artist.gender = gender ?? artist.gender
   artist.bornDate = bornDate ?? artist.bornDate
   artist.bornPlace = bornPlace ?? artist.bornPlace
+  artist.bio = bio ?? artist.bio
 
   if ('nationality' in req.body) {
     artist.nationality = nationality === '' ? null : nationality

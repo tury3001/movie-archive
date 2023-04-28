@@ -8,7 +8,7 @@ const attachNationality = async (req, res, next) => {
     if (country) {
       req.body.nationality = country
     } else {
-      return res.status(400).json({ msg: 'Given nationality does not exist'})
+      return res.status(400).json({ msg: 'Given nationality does not exist' })
     }
   }
 

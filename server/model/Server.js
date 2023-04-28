@@ -27,9 +27,7 @@ class Server {
     this.app.use('/api/languages', require('../routes/languages.routes'))
 
     this.app.use((req, res) => {
-      res.type('text/plain')
-      res.status(404)
-      res.send('404 - Not found')
+      res.status(404).json({ msg: 'Not found'})
     })
   }
 
