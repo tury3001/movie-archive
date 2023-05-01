@@ -47,4 +47,14 @@ const update = async (req, res) => {
   res.status(204).json({ msg: 'Artist updated' })
 }
 
-module.exports = { add, update }
+const remove = async (req, res) => {
+
+  const { id } = req.params
+
+  await Artist.deleteOne({ _id: id })
+  
+  res.status(200).json({ msg: 'Artist deleted' })
+
+}
+
+module.exports = { add, update, remove }

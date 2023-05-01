@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
-const { add, update } = require('../controllers/artist.controller')
+const { add, update, remove } = require('../controllers/artist.controller')
 const { fieldValidation } = require('../middlewares/field-validation')
 const Artist = require('../database/models/Artist')
 const { attachNationality } = require('../middlewares/attach-nationality')
@@ -70,5 +70,8 @@ router.patch('/:id',
   attachNationality,
   fieldValidation
 , update)
+
+router.delete('/:id'
+, remove)
 
 module.exports = router
