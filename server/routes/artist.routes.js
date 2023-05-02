@@ -71,7 +71,10 @@ router.patch('/:id',
   fieldValidation
 , update)
 
-router.delete('/:id'
+router.delete('/:id',
+  check('id', 'Given id is invalid')
+    .isMongoId(),
+  fieldValidation
 , remove)
 
 module.exports = router

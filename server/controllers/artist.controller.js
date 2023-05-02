@@ -51,6 +51,11 @@ const remove = async (req, res) => {
 
   const { id } = req.params
 
+  const artist = await Artist.findById(id)
+
+  if (!artist)
+    return res.status(400).json({ msg: 'Artist does not exist' })
+
   await Artist.deleteOne({ _id: id })
   
   res.status(200).json({ msg: 'Artist deleted' })

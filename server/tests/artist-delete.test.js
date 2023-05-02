@@ -41,4 +41,30 @@ describe('delete artist tests', () => {
     expect(await Artist.count()).toBe(0)
   })
 
+  test('delete an artist with invalid id', async () => {
+    await request(app)
+      .delete(`/api/artist/jd837fjdnf`)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('Given id is invalid')
+      })
+  })
+
+  test('delete an artist that does not exist', async () => {
+
+    const artist = getArtistData()
+    artist.nationality = await Country.findOne({ name: artist.nationality })._id
+
+    const { _id } = await Artist.create(artist)
+    await Artist.deleteOne({ _id })
+
+    expect(await Artist.count()).toBe(0)
+    
+    await request(app)
+      .delete(`/api/artist/${ _id }`)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.msg).toBe('Artist does not exist')
+      })
+  })
 })
