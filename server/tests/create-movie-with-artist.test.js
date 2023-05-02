@@ -12,7 +12,7 @@ const { countryData } = require('../database/seeders/seed-country')
 const { languageData } = require('../database/seeders/seed-language')
 
 const getMovieData = require('./samples/movie-data-sample')
-const { getManyArtists } = require('./samples/artist-data-sample')
+const { getManyArtists, getArtistData } = require('./samples/artist-data-sample')
 
 const app = server.getApp()
 
@@ -130,7 +130,7 @@ describe('create new movie with differents sets of artists as cast and director'
       const artist = await Artist.create(dataArtist)
 
       const movieData = getMovieData()
-      movieData.cast.push(artist._id)
+      movieData.cast.push(artist._id)      
 
       await request(app)
         .post('/api/movie')
@@ -143,19 +143,15 @@ describe('create new movie with differents sets of artists as cast and director'
  
   test('create movie with many artist in cast', async () => {
 
-    const dataArtist1 = await getOneArtist(0)
-    const artist1 = await Artist.create(dataArtist1)
+    let movieData = getMovieData()
+    movieData.cast = []
 
-    const dataArtist2 = await getOneArtist(1)
-    const artist2 = await Artist.create(dataArtist2)
+    for (let i=0; i<=2; i++) {
+      artist = await Artist.create(await getOneArtist(i))
+      movieData.cast.push(artist._id.valueOf())
+    }
 
-    const dataArtist3 = await getOneArtist(2)
-    const artist3 = await Artist.create(dataArtist3)
-
-    const movieData = getMovieData()
-    movieData.cast.push(artist1._id)
-    movieData.cast.push(artist2._id)
-    movieData.cast.push(artist3._id)
+    expect(await Artist.count()).toBe(3)
 
     await request(app)
       .post('/api/movie')
@@ -203,7 +199,7 @@ describe('create new movie with differents sets of artists as cast and director'
 })
 
 async function getOneArtist(n) {
-    const artist = getManyArtists()[n]
+    let artist = getArtistData(n)
     artist.nationality = (await Country.findOne({ name: artist.nationality }))._id
     return artist
 }

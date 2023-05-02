@@ -16,7 +16,7 @@ beforeAll( async () => {
     await Country.insertMany(countryData())
     await Artist.deleteMany({})
 
-    artistData = getArtistData()
+    artistData = getArtistData(0)
     country = await Country.findOne({ name: artistData.nationality })
     artistData.nationality = country._id
 })

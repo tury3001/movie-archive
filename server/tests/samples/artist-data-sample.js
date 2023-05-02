@@ -25,8 +25,8 @@ const artists = [
     }
 ]
 
-const getArtistData = () => {
-    return artists[0]
+const getArtistData = (n) => {
+    return Object.assign({}, artists[n]) // return cloned version for immutability
 }
 
 const getManyArtists = () => {

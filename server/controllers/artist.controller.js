@@ -1,4 +1,5 @@
 const Artist = require('../database/models/Artist')
+const Movie = require('../database/models/Movie')
 
 const add = async (req, res) => {
 
@@ -57,6 +58,7 @@ const remove = async (req, res) => {
     return res.status(400).json({ msg: 'Artist does not exist' })
 
   await Artist.deleteOne({ _id: id })
+  await Movie.updateMany({ director: id }, { director: null })
   
   res.status(200).json({ msg: 'Artist deleted' })
 
