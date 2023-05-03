@@ -116,6 +116,73 @@ describe('delete artist tests', () => {
     expect(movies[2].director).toBeNull()
     
   })
+
+  test('delete an artist that is in a movie as cast member', async () => {
+
+    const artistId1 = await insertArtist(0)
+    const artistId2 = await insertArtist(1)
+
+    let movieData = getMovieData()
+
+    movieData.cast = []
+    movieData.cast.push(artistId1)
+    movieData.cast.push(artistId2)
+    movieData.languages = []
+    movieData.countries = []
+    movieData.genres = []     
+
+    await Movie.create(movieData)
+
+    await request(app)
+      .delete(`/api/artist/${ artistId1 }`)
+      .expect(200)
+
+    expect(await Artist.count()).toBe(1)
+    
+    const movie = await Movie.findOne().populate('cast')
+    expect(movie.cast.length).toBe(1)
+    expect(movie.cast[0].name).toBe('Sigourney Weaver')
+  })
+
+  test('delete an artist that is in two movies as a cast member', async () => {
+
+    const artistId1 = await insertArtist(0)
+    const artistId2 = await insertArtist(1)
+    const artistId3 = await insertArtist(2)
+
+    let movieData1 = getMovieData()
+    movieData1.cast = []
+    movieData1.cast.push(artistId1)
+    movieData1.cast.push(artistId2)
+    movieData1.languages = []
+    movieData1.countries = []
+    movieData1.genres = []
+    const movie1 = await Movie.create(movieData1)
+
+    let movieData2 = getMovieData()
+    movieData2.cast = []
+    movieData2.cast.push(artistId3)
+    movieData2.cast.push(artistId1)
+    movieData2.languages = []
+    movieData2.countries = []
+    movieData2.genres = []
+    const movie2 = await Movie.create(movieData2)
+
+    await request(app)
+      .delete(`/api/artist/${ artistId1 }`)
+      .expect(200)
+
+    expect(await Artist.count()).toBe(2)
+    expect(await Movie.count()).toBe(2)
+
+    const m1 = await Movie.findById(movie1).populate('cast')
+    expect(m1.cast.length).toBe(1)
+    expect(m1.cast[0].name).toBe('Sigourney Weaver')
+
+    const m2 = await Movie.findById(movie2).populate('cast')
+    expect(m2.cast.length).toBe(1)
+    expect(m2.cast[0].name).toBe('Christopher Nolan')
+  })
 })
 
 async function insertArtist (n) {

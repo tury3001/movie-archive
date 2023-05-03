@@ -59,7 +59,9 @@ const remove = async (req, res) => {
 
   await Artist.deleteOne({ _id: id })
   await Movie.updateMany({ director: id }, { director: null })
-  
+
+  await Movie.updateMany({}, { $pull: { cast: id } })
+
   res.status(200).json({ msg: 'Artist deleted' })
 
 }
