@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
-const { add } = require('../controllers/movie.controller')
+const { add, update } = require('../controllers/movie.controller')
 const { fieldValidation } = require('../middlewares/field-validation')
 const { validateCountries } = require('../middlewares/countries-validation')
 const { validateLanguages } = require('../middlewares/languages-validation')
@@ -53,6 +53,10 @@ router.post('/',
   attachDirector,
   attachCast,
   add
+)
+
+router.patch('/:id',
+  update
 )
 
 module.exports = router

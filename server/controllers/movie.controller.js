@@ -27,4 +27,9 @@ const add = async (req, res) => {
   res.status(201).json({ msg: 'Movie has been saved' })
 }
 
-module.exports = { add }
+const update = async (req, res) => {
+
+  res.status(200).json({ msg: 'Movie updated' })
+}
+
+module.exports = { add, update }
