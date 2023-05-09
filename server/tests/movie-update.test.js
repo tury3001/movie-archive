@@ -16,6 +16,7 @@ const { getArtistData, getManyArtists } = require('./samples/artist-data-sample'
 const app = server.getApp()
 
 let movieData
+let movieId
 
 beforeAll( async () => {  
   await Country.insertMany(countryData())
@@ -28,7 +29,7 @@ afterAll(async () => {
 })
 
 beforeEach( async () => {
-  await insertMovieInDB()
+  movieId = await insertMovieInDB()
 })
 
 afterEach(async () => {
@@ -37,18 +38,74 @@ afterEach(async () => {
 
 describe('Update movie except its cast', () => {
 
-  test('update the movie title', async () => {
+  test('update movie with invalid id', async () => {
 
-    const movie = await Movie.findOne({})
+    await request(app)
+          .patch(`/api/movie/invalid-id`)
+          .send(movieData)
+          .expect(400)
+          .expect( res => {
+            expect(res.body.errors[0].msg).toBe('Given id is invalid')
+          })
+  })
+
+  test('update unexistent movie', async () => {
+
+    const movie = await Movie.findOne()
+    const validId = movie._id
+
+    await Movie.deleteMany({})
+
+    await request(app)
+      .patch(`/api/movie/${ validId }`)
+      .send(movieData)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.msg).toBe('Movie does not exist')
+      })
+  })
+
+  test('update the movie title', async () => {
 
     const movieData = {
       title: 'Memento'
     }
 
     await request(app)
-          .patch(`/api/movie/${ movie._id.valueOf() }`)
+          .patch(`/api/movie/${ movieId }`)
           .send(movieData)
           .expect(200)
+
+    const dbMovie = await Movie.findOne()
+    expect(dbMovie.title).toBe('Memento')
+  })
+
+  test('update the movie title with empty title', async () => {
+    const movieData = {
+      title: ''
+    }
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(400)
+      .expect(res => {
+        expect(res.body.errors[0].msg).toBe('Title can\'t be empty')
+      })
+  })
+
+  test('update the movie title with more than 80 chars', async () => {
+    const movieData = {
+      title: 'M'.repeat(81)
+    }
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(400)
+      .expect(res => {
+        expect(res.body.errors[0].msg).toBe('Title can\'t be longer than 80 characters')
+      })
   })
 
 })
@@ -81,5 +138,7 @@ async function insertMovieInDB () {
   movieData.languages.push(language1)
   movieData.languages.push(language2)
 
-  await Movie.create(movieData)
+  const result = await Movie.create(movieData)
+
+  return result._id
 }

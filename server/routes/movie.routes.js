@@ -56,6 +56,12 @@ router.post('/',
 )
 
 router.patch('/:id',
+  check('id', 'Given id is invalid').isMongoId(),
+  check('title', 'Title is invalid')
+    .not().isEmpty().withMessage('Title can\'t be empty')
+    .isLength({ max: 80 })
+    .withMessage('Title can\'t be longer than 80 characters'),
+  fieldValidation,
   update
 )
 
