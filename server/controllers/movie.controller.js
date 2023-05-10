@@ -29,21 +29,18 @@ const add = async (req, res) => {
 
 const update = async (req, res) => {
 
-  const { title } = req.body
-
-  const data = {
-    title
-  }
+  const { title, year } = req.body
 
   try {
     const movie = await Movie.findById(req.params.id)
-
-    if (movie) {
-      movie.title = data.title ?? movie.title
-      await movie.save()
-    } else {
+    
+    if (!movie)
       return res.status(400).json({ msg: 'Movie does not exist' })
-    }
+
+
+    movie.title = title || movie.title
+    movie.year = year || movie.year
+    await movie.save()    
       
   } catch (error) {
     console.log('Movie can\'t be updated')

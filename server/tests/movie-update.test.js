@@ -88,10 +88,10 @@ describe('Update movie except its cast', () => {
     await request(app)
       .patch(`/api/movie/${ movieId }`)
       .send(movieData)
-      .expect(400)
-      .expect(res => {
-        expect(res.body.errors[0].msg).toBe('Title can\'t be empty')
-      })
+      .expect(200)
+
+    const movie = await Movie.findById(movieId)
+    expect(movie.title).toBe('Jurassic Park')
   })
 
   test('update the movie title with more than 80 chars', async () => {
@@ -108,6 +108,47 @@ describe('Update movie except its cast', () => {
       })
   })
 
+  test('update the movie year', async () => {
+    const movieData = {
+      year: 1999
+    }
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId)
+    expect(movie.year).toBe(1999)
+  })
+
+  test('update the movie with invalid year value', async () => {
+    const movieData = {
+      year: 'invalid-year'
+    }
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('The year must be a number between 1895 and 3000')
+      })      
+  })
+
+  test('update the movie with out of range year', async () => {
+    const movieData = {
+      year: 8938
+    }
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('The year must be a number between 1895 and 3000')
+      })      
+  })
 })
 
 async function insertMovieInDB () {

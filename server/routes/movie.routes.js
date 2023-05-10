@@ -58,9 +58,13 @@ router.post('/',
 router.patch('/:id',
   check('id', 'Given id is invalid').isMongoId(),
   check('title', 'Title is invalid')
-    .not().isEmpty().withMessage('Title can\'t be empty')
+    .optional()
     .isLength({ max: 80 })
     .withMessage('Title can\'t be longer than 80 characters'),
+  check('year', 'The year is invalid')
+    .optional()
+    .isInt({ min: 1895, max: 3000 })
+    .withMessage('The year must be a number between 1895 and 3000'),
   fieldValidation,
   update
 )
