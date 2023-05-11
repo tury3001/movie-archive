@@ -34,6 +34,7 @@ beforeEach( async () => {
 
 afterEach(async () => {
   await Movie.deleteMany({})
+  await Artist.deleteMany({})
 })
 
 describe('Update movie except its cast', () => {
@@ -149,6 +150,71 @@ describe('Update movie except its cast', () => {
         expect(res.body.errors[0].msg).toBe('The year must be a number between 1895 and 3000')
       })      
   })
+
+  test('update movie with invalid director', async () => {
+
+    const movieData = {
+      director: 'not-valid-director'
+    }
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('Invalid id for director')
+      })  
+  })
+
+  test('update movie with empty director', async () => {
+    const movieData = {
+      director: null
+    }
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('Invalid id for director')
+      })
+  })
+
+  test('update movie with valid director', async () => {
+
+    let artist = getArtistData(1)
+    country = await Country.findOne({ name: artist.nationality })
+    artist.nationality = country._id
+
+    const createdArtist = await Artist.create(artist)
+
+    movieData.director = createdArtist._id.toString()
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId).populate('director')
+    expect(movie.director.name).toBe('Sigourney Weaver')
+  })
+
+  test('update movie with unexistent director', async () => {
+
+    let artist = getArtistData(1)
+    country = await Country.findOne({ name: artist.nationality })
+    artist.nationality = country._id
+
+    const createdArtist = await Artist.create(artist)
+    const createdArtistId = createdArtist._id.toString()
+    await Artist.deleteOne({ _id: createdArtistId })
+
+    movieData.director = createdArtistId
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(400)
+  })
 })
 
 async function insertMovieInDB () {
@@ -159,7 +225,7 @@ async function insertMovieInDB () {
   artist.nationality = country._id
   const createdArtist = await Artist.create(artist)
 
-  movieData.director = createdArtist
+  movieData.director = createdArtist._id.toString()
   
   const country1 = await Country.findOne({ name: 'Argentina'})
   const country2 = await Country.findOne({ name: 'Spain'})

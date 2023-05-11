@@ -65,7 +65,12 @@ router.patch('/:id',
     .optional()
     .isInt({ min: 1895, max: 3000 })
     .withMessage('The year must be a number between 1895 and 3000'),
-  fieldValidation,
+  check('director')
+    .optional()
+    .isMongoId()
+    .withMessage('Invalid id for director'),
+    fieldValidation,
+    attachDirector,
   update
 )
 
