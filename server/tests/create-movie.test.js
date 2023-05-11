@@ -131,14 +131,14 @@ describe('add movie tests', () => {
 
   test('add new movie with invalid synopsis', async () => {
     
-    movieData.synopsis = { some: 'thing' }
+    movieData.synopsis = { some: [] }
 
     await request(app)
       .post('/api/movie')
       .send(movieData)
       .expect(400)
       .expect((res) => {
-        expect(res.body.errors[0].msg).toEqual('Given synopsis is invalid')
+        expect(res.body.errors[0].msg).toEqual('Synopsis should contain only alphanumeric and puntuaction characters')
       })
 
     expect(await Movie.count()).toBe(0)
@@ -159,6 +159,21 @@ describe('add movie tests', () => {
     expect(await Movie.count()).toBe(0)
   })
 
+  test('add new movie with synopsis that contains invalid characters', async () => {
+    
+    movieData.synopsis = 'Invalid characters for synopsis: *&*^#!'
+
+    await request(app)
+      .post('/api/movie')
+      .send(movieData)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.errors[0].msg).toEqual('Synopsis should contain only alphanumeric and puntuaction characters')
+      })
+
+    expect(await Movie.count()).toBe(0)
+  })
+
   test('add new movie with empty comment', async () => {
     
     movieData.comment = ''
@@ -170,7 +185,8 @@ describe('add movie tests', () => {
 
     expect(await Movie.count()).toBe(1)
     const movieAdded = await Movie.find({ title: 'Jurassic Park' })
-    expect(movieAdded[0].director).toBe('Steven Spielberg')
+    expect(movieAdded[0].year).toBe(1993)
+
   })
 
   test('add new movie with invalid comment', async () => {

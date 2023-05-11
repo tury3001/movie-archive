@@ -30,11 +30,12 @@ router.post('/',
   check('synopsis', 'Given synopsis is invalid')
     .optional({ checkFalsy: true })
     .matches(/^[A-Za-z0-9 .,'!-&]+$/)
+    .withMessage('Synopsis should contain only alphanumeric and puntuaction characters')
     .isLength({ max: 512 })
     .withMessage('Synopsis can\'t have more than 512 characters'),
   check('comment', 'Given comment is invalid')
     .optional({ checkFalsy: true })
-    .matches(/^[A-Za-z0-9 .,'!-&]+$/)
+    .matches(/^[A-Za-z0-9 .,'!-&]+$/)    
     .isLength({ max: 512 })
     .withMessage('Comment can\'t have more than 512 characters'),
   check('tags', 'Given tags are invalid')
@@ -65,6 +66,12 @@ router.patch('/:id',
     .optional()
     .isInt({ min: 1895, max: 3000 })
     .withMessage('The year must be a number between 1895 and 3000'),
+  check('synopsis')
+    .optional({ checkFalsy: true })
+    .isLength({ max: 512 })
+    .withMessage('Synopsis can\'t have more than 512 characters')
+    .matches(/^[A-Za-z0-9 .,'!-&]+$/)
+    .withMessage('Synopsis should contain only alphanumeric and puntuaction characters'),
   check('director')
     .optional()
     .isMongoId()

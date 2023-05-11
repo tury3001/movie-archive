@@ -215,6 +215,58 @@ describe('Update movie except its cast', () => {
       .send(movieData)
       .expect(400)
   })
+
+  test('update movie with empty synopsis it should clear the current synopsis', async () => {
+    movieData.synopsis = ''
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId)
+    expect(movie.synopsis).toBe('')
+  })
+
+  test('update movie with null synopsis should not update the synopsis', async () => {
+
+    const beforeSynopsis = movieData.synopsis
+    movieData.synopsis = null
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId)
+    expect(movie.synopsis).toBe(beforeSynopsis)
+  })
+
+  test('update movie with synopsis length greater than 512 characters', async () => {
+
+    movieData.synopsis = 's'.repeat(513)
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('Synopsis can\'t have more than 512 characters')
+      })
+  })
+
+  test('update movie with invalid symbols', async () => {
+
+    movieData.synopsis = 'This synopsis has s&+@#$ge symbols'
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('Synopsis should contain only alphanumeric and puntuaction characters')
+      })
+  })
 })
 
 async function insertMovieInDB () {
