@@ -59,7 +59,7 @@ describe('Update movie except its cast', () => {
 
     await request(app)
       .patch(`/api/movie/${ validId }`)
-      .send(movieData)
+      .send(getMovieData())
       .expect(400)
       .expect( res => {
         expect(res.body.msg).toBe('Movie does not exist')
@@ -72,10 +72,12 @@ describe('Update movie except its cast', () => {
       title: 'Memento'
     }
 
+    const movie = await Movie.findOne()
+
     await request(app)
-          .patch(`/api/movie/${ movieId }`)
-          .send(movieData)
-          .expect(200)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(200)
 
     const dbMovie = await Movie.findOne()
     expect(dbMovie.title).toBe('Memento')
@@ -166,17 +168,14 @@ describe('Update movie except its cast', () => {
       })  
   })
 
-  test('update movie with empty director', async () => {
-    const movieData = {
-      director: null
-    }
+  test('update movie with empty director is possible', async () => {
+    const movieData = getMovieData()
+    movieData.director = null
 
     await request(app)
       .patch(`/api/movie/${ movieId }`)
       .send(movieData)
-      .expect( res => {
-        expect(res.body.errors[0].msg).toBe('Invalid id for director')
-      })
+      .expect(200)
   })
 
   test('update movie with valid director', async () => {
@@ -187,11 +186,12 @@ describe('Update movie except its cast', () => {
 
     const createdArtist = await Artist.create(artist)
 
-    movieData.director = createdArtist._id.toString()
+    let data = getMovieData()
+    data.director = createdArtist._id.toString()
 
     await request(app)
       .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .send(data)
       .expect(200)
 
     const movie = await Movie.findById(movieId).populate('director')
@@ -217,11 +217,13 @@ describe('Update movie except its cast', () => {
   })
 
   test('update movie with empty synopsis it should clear the current synopsis', async () => {
-    movieData.synopsis = ''
+
+    let data = getMovieData()
+    data.synopsis = ''
 
     await request(app)
       .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .send(data)
       .expect(200)
 
     const movie = await Movie.findById(movieId)
@@ -230,12 +232,13 @@ describe('Update movie except its cast', () => {
 
   test('update movie with null synopsis should not update the synopsis', async () => {
 
-    const beforeSynopsis = movieData.synopsis
-    movieData.synopsis = null
+    let data = getMovieData()
+    const beforeSynopsis = data.synopsis
+    data.synopsis = null
 
     await request(app)
       .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .send(data)
       .expect(200)
 
     const movie = await Movie.findById(movieId)
@@ -266,6 +269,52 @@ describe('Update movie except its cast', () => {
       .expect( res => {
         expect(res.body.errors[0].msg).toBe('Synopsis should contain only alphanumeric and puntuaction characters')
       })
+  })
+
+  test('update movie with missing genres', async () => {
+    let data = getMovieData()
+
+    data.genres = undefined
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId).populate('genres')
+
+    expect(movie.genres.length).toBe(2)
+    expect(movie.genres[0].name).toBe('drama')
+    expect(movie.genres[1].name).toBe('comedy')    
+  })
+
+  test('update movie with empty genres is possible', async () => {
+
+    let data = getMovieData()
+    data.genres = []
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId).populate('genres')
+    expect(movie.genres.length).toBe(0) 
+  })
+
+  test('update movie with other genres', async () => {
+    let data = getMovieData()
+    data.genres = ['western', 'documentary']    
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId).populate('genres')
+    expect(movie.genres.length).toBe(2)
+    expect(movie.genres[0].name).toBe('western')
+    expect(movie.genres[1].name).toBe('documentary')
   })
 })
 

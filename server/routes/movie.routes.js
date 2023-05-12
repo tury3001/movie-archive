@@ -73,11 +73,12 @@ router.patch('/:id',
     .matches(/^[A-Za-z0-9 .,'!-&]+$/)
     .withMessage('Synopsis should contain only alphanumeric and puntuaction characters'),
   check('director')
-    .optional()
+    .optional({ checkFalsy: true })
     .isMongoId()
     .withMessage('Invalid id for director'),
     fieldValidation,
     attachDirector,
+  validateGenres,
   update
 )
 

@@ -30,10 +30,10 @@ const add = async (req, res) => {
 
 const update = async (req, res) => {
 
-  const { title, year, director, synopsis } = req.body
+  const { title, year, director, synopsis, genres } = req.body
 
   try {
-    const movie = await Movie.findById(req.params.id)    
+    const movie = await Movie.findById(req.params.id)
 
     if (!movie)
       return res.status(400).json({ msg: 'Movie does not exist' })
@@ -41,7 +41,9 @@ const update = async (req, res) => {
     movie.title = title || movie.title
     movie.year = year || movie.year
     movie.director = director || movie.director
-    movie.synopsis = synopsis ?? movie.synopsis
+    movie.synopsis = synopsis ?? movie.synopsis        
+    movie.genres = genres ?? movie.genres
+
     await movie.save()
       
   } catch (error) {
