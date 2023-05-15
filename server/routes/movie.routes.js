@@ -76,8 +76,13 @@ router.patch('/:id',
     .optional({ checkFalsy: true })
     .isMongoId()
     .withMessage('Invalid id for director'),
-    fieldValidation,
-    attachDirector,
+  check('countries')
+    .optional()
+    .isArray()
+    .withMessage('Given countries are invalid'),
+  fieldValidation,    
+  attachDirector,
+  validateCountries,
   validateGenres,
   update
 )

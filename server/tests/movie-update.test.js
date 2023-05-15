@@ -316,6 +316,77 @@ describe('Update movie except its cast', () => {
     expect(movie.genres[0].name).toBe('western')
     expect(movie.genres[1].name).toBe('documentary')
   })
+
+  test('update movie with no countries', async () => {
+    let data = getMovieData()
+    delete data['countries']
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId).populate('countries')
+    expect(movie.countries.length).toBe(2)
+    expect(movie.countries[0].name).toBe('Argentina')
+    expect(movie.countries[1].name).toBe('Spain')
+  })
+
+  test('update movie with empty countries', async () => {
+    let data = getMovieData()
+    data.countries = []
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId).populate('countries')
+    expect(movie.countries.length).toBe(0)
+  })
+
+  test('update movie with invalid set of countries', async () => {
+    let data = getMovieData()
+    data.countries = 'invalid-set-of-countries'
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('Given countries are invalid')
+      })
+  })
+
+  test('update movie with nonexistent countries', async () => {
+    let data = getMovieData()
+    data.countries = ['Bolivia', 'Alto Volta']
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.msg).toBe('Given country doesn\'t exist')
+      })
+  })
+
+  test('update movie with valid countries', async () => {
+    let data = getMovieData()
+    data.countries = ['Colombia', 'Nicaragua', 'Mexico']
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(200)
+
+      const movie = await Movie.findById(movieId).populate('countries')
+      
+      expect(movie.countries.length).toBe(3)
+      expect(movie.countries[0].name).toBe('Colombia')
+      expect(movie.countries[1].name).toBe('Nicaragua')
+      expect(movie.countries[2].name).toBe('Mexico')
+  })
 })
 
 async function insertMovieInDB () {
