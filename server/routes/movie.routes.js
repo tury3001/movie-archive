@@ -80,9 +80,14 @@ router.patch('/:id',
     .optional()
     .isArray()
     .withMessage('Given countries are invalid'),
+  check('languages')
+    .optional()
+    .isArray()
+    .withMessage('Given languages are invalid'),
   fieldValidation,    
   attachDirector,
   validateCountries,
+  validateLanguages,
   validateGenres,
   update
 )

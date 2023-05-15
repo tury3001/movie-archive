@@ -30,7 +30,7 @@ const add = async (req, res) => {
 
 const update = async (req, res) => {
 
-  const { title, year, director, synopsis, genres, countries } = req.body
+  const { title, year, director, synopsis, genres, countries, languages } = req.body
 
   try {
     const movie = await Movie.findById(req.params.id)
@@ -44,6 +44,7 @@ const update = async (req, res) => {
     movie.synopsis = synopsis ?? movie.synopsis        
     movie.genres = genres ?? movie.genres
     movie.countries = countries ?? movie.countries
+    movie.languages = languages ?? movie.languages
 
     await movie.save()
       

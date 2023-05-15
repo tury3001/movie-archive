@@ -97,6 +97,19 @@ describe('Update movie except its cast', () => {
     expect(movie.title).toBe('Jurassic Park')
   })
 
+  test('update the movie with no title', async () => {
+    const movieData = getMovieData()
+    delete movieData.title
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId)
+    expect(movie.title).toBe('Jurassic Park')
+  })
+
   test('update the movie title with more than 80 chars', async () => {
     const movieData = {
       title: 'M'.repeat(81)
@@ -153,6 +166,19 @@ describe('Update movie except its cast', () => {
       })      
   })
 
+  test('update the movie with no year', async () => {
+    const movieData = getMovieData()
+    delete movieData.year
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(movieData)
+      .expect(200)
+
+      const movie = await Movie.findById(movieId)
+      expect(movie.year).toBe(1993)
+  })
+
   test('update movie with invalid director', async () => {
 
     const movieData = {
@@ -170,12 +196,15 @@ describe('Update movie except its cast', () => {
 
   test('update movie with empty director is possible', async () => {
     const movieData = getMovieData()
-    movieData.director = null
+    delete movieData.director
 
     await request(app)
       .patch(`/api/movie/${ movieId }`)
       .send(movieData)
       .expect(200)
+
+    const movie = await Movie.findById(movieId).populate('director')
+    expect(movie.director.name).toBe('Patrick Stewart')
   })
 
   test('update movie with valid director', async () => {
@@ -380,13 +409,83 @@ describe('Update movie except its cast', () => {
       .send(data)
       .expect(200)
 
-      const movie = await Movie.findById(movieId).populate('countries')
-      
-      expect(movie.countries.length).toBe(3)
-      expect(movie.countries[0].name).toBe('Colombia')
-      expect(movie.countries[1].name).toBe('Nicaragua')
-      expect(movie.countries[2].name).toBe('Mexico')
+    const movie = await Movie.findById(movieId).populate('countries')
+
+    expect(movie.countries.length).toBe(3)
+    expect(movie.countries[0].name).toBe('Colombia')
+    expect(movie.countries[1].name).toBe('Nicaragua')
+    expect(movie.countries[2].name).toBe('Mexico')
   })
+
+  test('update movie without languages', async () => {
+    let data = getMovieData()
+    delete data.languages
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId).populate('languages')
+    expect(movie.languages.length).toBe(2)
+    expect(movie.languages[0].name).toBe('English')
+    expect(movie.languages[1].name).toBe('Spanish')
+  })
+
+  test('update movie with empty languages', async () => {
+    let data = getMovieData()
+    data.languages = []
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieId).populate('languages')
+    expect(movie.languages.length).toBe(0)
+  }) 
+  
+  test('update movie with invalid languages', async () => {
+    let data = getMovieData()
+    data.languages = 'invalid-languages'
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('Given languages are invalid')
+      })
+  })
+
+  test('update movie with non existent languages', async () => {
+    let data = getMovieData()
+    data.languages = ['asirico', 'enciclico']
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.msg).toBe('Given language doesn\'t exist')
+      })
+  })
+
+  test('update movie with valid languages', async () => {
+    let data = getMovieData()
+    data.languages = ['Basque', 'Portuguese']
+
+    await request(app)
+      .patch(`/api/movie/${ movieId }`)
+      .send(data)
+      .expect(200)
+    
+    const movie = await Movie.findById(movieId).populate('languages')
+    expect(movie.languages.length).toBe(2)
+    expect(movie.languages[0].name).toBe('Basque')
+    expect(movie.languages[1].name).toBe('Portuguese')
+  })
+
 })
 
 async function insertMovieInDB () {
