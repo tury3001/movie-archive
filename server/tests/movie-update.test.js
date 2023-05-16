@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const request = require('supertest')
 const server = require('../model/Server')
 const { dbDisconnect } = require('../database/config')
@@ -11,12 +10,12 @@ const { genreData } = require('../database/seeders/seed-genre')
 const { countryData } = require('../database/seeders/seed-country')
 const { languageData } = require('../database/seeders/seed-language')
 const getMovieData = require('./samples/movie-data-sample')
-const { getArtistData, getManyArtists } = require('./samples/artist-data-sample')
+const { getArtistData } = require('./samples/artist-data-sample')
+const { insertMovieInDB } = require('./utils')
 
 const app = server.getApp()
 
 let movieData
-let movieId
 
 beforeAll( async () => {  
   await Country.insertMany(countryData())
@@ -29,7 +28,7 @@ afterAll(async () => {
 })
 
 beforeEach( async () => {
-  movieId = await insertMovieInDB()
+  movieData = await insertMovieInDB()
 })
 
 afterEach(async () => {
@@ -68,56 +67,53 @@ describe('Update movie except its cast', () => {
 
   test('update the movie title', async () => {
 
-    const movieData = {
+    const data = {
       title: 'Memento'
     }
 
-    const movie = await Movie.findOne()
-
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(200)
 
-    const dbMovie = await Movie.findOne()
-    expect(dbMovie.title).toBe('Memento')
+    const movie = await Movie.findById(movieData._id)
+    expect(movie.title).toBe('Memento')
   })
 
   test('update the movie title with empty title', async () => {
-    const movieData = {
+    const data = {
       title: ''
     }
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId)
+    const movie = await Movie.findById(movieData._id)
     expect(movie.title).toBe('Jurassic Park')
   })
 
   test('update the movie with no title', async () => {
-    const movieData = getMovieData()
-    delete movieData.title
+    const data = { year: 1988, countries: ['Spain', 'Sweden'] }
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId)
+    const movie = await Movie.findById(movieData._id)
     expect(movie.title).toBe('Jurassic Park')
   })
 
   test('update the movie title with more than 80 chars', async () => {
-    const movieData = {
+    const data = {
       title: 'M'.repeat(81)
     }
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(400)
       .expect(res => {
         expect(res.body.errors[0].msg).toBe('Title can\'t be longer than 80 characters')
@@ -125,27 +121,27 @@ describe('Update movie except its cast', () => {
   })
 
   test('update the movie year', async () => {
-    const movieData = {
+    const data = {
       year: 1999
     }
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId)
+    const movie = await Movie.findById(movieData._id)
     expect(movie.year).toBe(1999)
   })
 
   test('update the movie with invalid year value', async () => {
-    const movieData = {
+    const data = {
       year: 'invalid-year'
     }
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(400)
       .expect( res => {
         expect(res.body.errors[0].msg).toBe('The year must be a number between 1895 and 3000')
@@ -153,13 +149,13 @@ describe('Update movie except its cast', () => {
   })
 
   test('update the movie with out of range year', async () => {
-    const movieData = {
+    const data = {
       year: 8938
     }
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(400)
       .expect( res => {
         expect(res.body.errors[0].msg).toBe('The year must be a number between 1895 and 3000')
@@ -167,27 +163,26 @@ describe('Update movie except its cast', () => {
   })
 
   test('update the movie with no year', async () => {
-    const movieData = getMovieData()
-    delete movieData.year
+    const data = { title: 'Antoher movie', countries: ['Argentina', 'Uruguay'] }
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(200)
 
-      const movie = await Movie.findById(movieId)
+      const movie = await Movie.findById(movieData._id)
       expect(movie.year).toBe(1993)
   })
 
   test('update movie with invalid director', async () => {
 
-    const movieData = {
+    const data = {
       director: 'not-valid-director'
     }
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(400)
       .expect( res => {
         expect(res.body.errors[0].msg).toBe('Invalid id for director')
@@ -195,15 +190,14 @@ describe('Update movie except its cast', () => {
   })
 
   test('update movie with empty director is possible', async () => {
-    const movieData = getMovieData()
-    delete movieData.director
+    const data = { title: 'Back to the Future', year: 1985 }
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
-      .send(movieData)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('director')
+    const movie = await Movie.findById(movieData._id).populate('director')
     expect(movie.director.name).toBe('Patrick Stewart')
   })
 
@@ -219,11 +213,11 @@ describe('Update movie except its cast', () => {
     data.director = createdArtist._id.toString()
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('director')
+    const movie = await Movie.findById(movieData._id).populate('director')
     expect(movie.director.name).toBe('Sigourney Weaver')
   })
 
@@ -240,7 +234,7 @@ describe('Update movie except its cast', () => {
     movieData.director = createdArtistId
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(movieData)
       .expect(400)
   })
@@ -251,11 +245,11 @@ describe('Update movie except its cast', () => {
     data.synopsis = ''
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId)
+    const movie = await Movie.findById(movieData._id)
     expect(movie.synopsis).toBe('')
   })
 
@@ -266,11 +260,11 @@ describe('Update movie except its cast', () => {
     data.synopsis = null
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId)
+    const movie = await Movie.findById(movieData._id)
     expect(movie.synopsis).toBe(beforeSynopsis)
   })
 
@@ -279,7 +273,7 @@ describe('Update movie except its cast', () => {
     movieData.synopsis = 's'.repeat(513)
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(movieData)
       .expect(400)
       .expect( res => {
@@ -292,7 +286,7 @@ describe('Update movie except its cast', () => {
     movieData.synopsis = 'This synopsis has s&+@#$ge symbols'
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(movieData)
       .expect(400)
       .expect( res => {
@@ -306,11 +300,11 @@ describe('Update movie except its cast', () => {
     data.genres = undefined
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('genres')
+    const movie = await Movie.findById(movieData._id).populate('genres')
 
     expect(movie.genres.length).toBe(2)
     expect(movie.genres[0].name).toBe('drama')
@@ -323,11 +317,11 @@ describe('Update movie except its cast', () => {
     data.genres = []
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('genres')
+    const movie = await Movie.findById(movieData._id).populate('genres')
     expect(movie.genres.length).toBe(0) 
   })
 
@@ -336,11 +330,11 @@ describe('Update movie except its cast', () => {
     data.genres = ['western', 'documentary']    
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('genres')
+    const movie = await Movie.findById(movieData._id).populate('genres')
     expect(movie.genres.length).toBe(2)
     expect(movie.genres[0].name).toBe('western')
     expect(movie.genres[1].name).toBe('documentary')
@@ -351,11 +345,11 @@ describe('Update movie except its cast', () => {
     delete data['countries']
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('countries')
+    const movie = await Movie.findById(movieData._id).populate('countries')
     expect(movie.countries.length).toBe(2)
     expect(movie.countries[0].name).toBe('Argentina')
     expect(movie.countries[1].name).toBe('Spain')
@@ -366,11 +360,11 @@ describe('Update movie except its cast', () => {
     data.countries = []
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('countries')
+    const movie = await Movie.findById(movieData._id).populate('countries')
     expect(movie.countries.length).toBe(0)
   })
 
@@ -379,7 +373,7 @@ describe('Update movie except its cast', () => {
     data.countries = 'invalid-set-of-countries'
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(400)
       .expect( res => {
@@ -392,7 +386,7 @@ describe('Update movie except its cast', () => {
     data.countries = ['Bolivia', 'Alto Volta']
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(400)
       .expect( res => {
@@ -405,11 +399,11 @@ describe('Update movie except its cast', () => {
     data.countries = ['Colombia', 'Nicaragua', 'Mexico']
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('countries')
+    const movie = await Movie.findById(movieData._id).populate('countries')
 
     expect(movie.countries.length).toBe(3)
     expect(movie.countries[0].name).toBe('Colombia')
@@ -422,11 +416,11 @@ describe('Update movie except its cast', () => {
     delete data.languages
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('languages')
+    const movie = await Movie.findById(movieData._id).populate('languages')
     expect(movie.languages.length).toBe(2)
     expect(movie.languages[0].name).toBe('English')
     expect(movie.languages[1].name).toBe('Spanish')
@@ -437,11 +431,11 @@ describe('Update movie except its cast', () => {
     data.languages = []
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
 
-    const movie = await Movie.findById(movieId).populate('languages')
+    const movie = await Movie.findById(movieData._id).populate('languages')
     expect(movie.languages.length).toBe(0)
   }) 
   
@@ -450,7 +444,7 @@ describe('Update movie except its cast', () => {
     data.languages = 'invalid-languages'
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(400)
       .expect( res => {
@@ -463,7 +457,7 @@ describe('Update movie except its cast', () => {
     data.languages = ['asirico', 'enciclico']
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(400)
       .expect( res => {
@@ -476,47 +470,13 @@ describe('Update movie except its cast', () => {
     data.languages = ['Basque', 'Portuguese']
 
     await request(app)
-      .patch(`/api/movie/${ movieId }`)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
       .send(data)
       .expect(200)
     
-    const movie = await Movie.findById(movieId).populate('languages')
+    const movie = await Movie.findById(movieData._id).populate('languages')
     expect(movie.languages.length).toBe(2)
     expect(movie.languages[0].name).toBe('Basque')
     expect(movie.languages[1].name).toBe('Portuguese')
   })
-
 })
-
-async function insertMovieInDB () {
-  movieData = getMovieData()
-
-  let artist = getArtistData(0)
-  country = await Country.findOne({ name: artist.nationality })
-  artist.nationality = country._id
-  const createdArtist = await Artist.create(artist)
-
-  movieData.director = createdArtist._id.toString()
-  
-  const country1 = await Country.findOne({ name: 'Argentina'})
-  const country2 = await Country.findOne({ name: 'Spain'})
-  movieData.countries = []
-  movieData.countries.push(country1)
-  movieData.countries.push(country2)
-
-  const genre1 = await Genre.findOne({ name: 'drama' })
-  const genre2 = await Genre.findOne({ name: 'comedy' })
-  movieData.genres = []
-  movieData.genres.push(genre1)
-  movieData.genres.push(genre2)
-
-  const language1 = await Language.findOne({ name: 'English' })
-  const language2 = await Language.findOne({ name: 'Spanish' })
-  movieData.languages = []
-  movieData.languages.push(language1)
-  movieData.languages.push(language2)
-
-  const result = await Movie.create(movieData)
-
-  return result._id
-}
