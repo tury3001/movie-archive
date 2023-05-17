@@ -27,9 +27,10 @@ const MovieSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Language',
     required: false
-  }],
+  }],  
   synopsis: String,
-  comment: String
+  comment: String,
+  tags: [String]  
 })
 
 module.exports = model('Movie', MovieSchema)

@@ -84,6 +84,15 @@ router.patch('/:id',
     .optional()
     .isArray()
     .withMessage('Given languages are invalid'),
+  check('tags', 'Given tags are invalid')
+    .optional()
+    .isArray(),
+  check('tags.*', 'There are invalid tags')
+    .not().isEmpty()
+    .withMessage('A tag can\'t be empty')
+    .matches(/^[A-Za-z0-9 .,'!\-&]+$/)
+    .isLength({ max: 60 })
+    .withMessage('Tags can\'t have more than 60 characters each'),
   fieldValidation,    
   attachDirector,
   validateCountries,

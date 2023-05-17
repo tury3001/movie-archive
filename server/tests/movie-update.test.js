@@ -239,6 +239,20 @@ describe('Update movie except its cast', () => {
       .expect(400)
   })
 
+  test('update movie with valid synopsis', async () => {
+
+    let data = getMovieData()
+    data.synopsis = 'Valid synopsis'
+
+    await request(app)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieData._id)
+    expect(movie.synopsis).toBe('Valid synopsis')
+  })
+
   test('update movie with empty synopsis it should clear the current synopsis', async () => {
 
     let data = getMovieData()
@@ -479,4 +493,55 @@ describe('Update movie except its cast', () => {
     expect(movie.languages[0].name).toBe('Basque')
     expect(movie.languages[1].name).toBe('Portuguese')
   })
+  
+  test('update tags with empty tags', async () => {
+    let data = { title: 'Jurassic World', year: 2020 }
+    data.tags = []
+
+    await request(app)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieData._id)
+    expect(movie.tags).toStrictEqual([])
+  })
+
+  test('update tags with no tags', async () => {
+    let data = { title: 'Jurassic World', year: 2020 }
+
+    await request(app)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
+      .expect(200)
+
+    const movie = await Movie.findById(movieData._id)
+    expect(movie.tags).toStrictEqual(['classic', 'film-noir'])
+  })
+  
+  test('update tags with invalid characters in tags', async () => {
+    let data = { title: 'Jurassic World', year: 2020 }
+    data.tags = ['>?":{P', '@@#$#$']
+
+    await request(app)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('There are invalid tags')
+      })
+  }) 
+  
+  test('update tags with too long tags', async () => {
+    let data = { title: 'Jurassic World', year: 2020 }
+    data.tags = [ 's'.repeat(61), 'normal']
+
+    await request(app)
+      .patch(`/api/movie/${ movieData._id.toString() }`)
+      .send(data)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('Tags can\'t have more than 60 characters each')
+      })
+  }) 
 })
