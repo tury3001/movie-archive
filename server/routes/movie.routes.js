@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
-const { add, update } = require('../controllers/movie.controller')
+const { add, update, remove } = require('../controllers/movie.controller')
 const { fieldValidation } = require('../middlewares/field-validation')
 const { validateCountries } = require('../middlewares/countries-validation')
 const { validateLanguages } = require('../middlewares/languages-validation')
@@ -99,6 +99,12 @@ router.patch('/:id',
   validateLanguages,
   validateGenres,
   update
+)
+
+router.delete('/:id',
+  check('id', 'Given id is invalid').isMongoId(),
+  fieldValidation,
+  remove
 )
 
 module.exports = router

@@ -1,5 +1,4 @@
 const Movie = require('../database/models/Movie')
-const Artist = require('../database/models/Artist')
 
 const add = async (req, res) => {
   const { title, year, director, cast, genres, countries, languages, comment, synopsis, tags } = req.body
@@ -57,4 +56,13 @@ const update = async (req, res) => {
   res.status(200).json({ msg: 'Movie updated' })
 }
 
-module.exports = { add, update }
+const remove = async (req, res) => {
+
+  const { id } = req.params
+
+  console.log(id)
+
+  res.status(200).json({ msg: 'Movie has been deleted' })
+}
+
+module.exports = { add, update, remove }
