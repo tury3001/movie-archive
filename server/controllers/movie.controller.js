@@ -60,7 +60,12 @@ const remove = async (req, res) => {
 
   const { id } = req.params
 
-  console.log(id)
+  const movie = await Movie.findById(id)
+
+  if (!movie)
+    return res.status(400).json({ msg: 'Given movie does not exist'})
+
+  await Movie.findOneAndDelete(id)
 
   res.status(200).json({ msg: 'Movie has been deleted' })
 }
