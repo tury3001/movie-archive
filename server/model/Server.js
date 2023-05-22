@@ -26,6 +26,7 @@ class Server {
     this.app.use('/api/genres', require('../routes/genres.routes'))
     this.app.use('/api/languages', require('../routes/languages.routes'))
 
+
     this.app.use((req, res) => {
       res.status(404).json({ msg: 'Not found'})
     })

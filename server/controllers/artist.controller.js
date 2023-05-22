@@ -66,4 +66,9 @@ const remove = async (req, res) => {
 
 }
 
-module.exports = { add, update, remove }
+const addToMovie = (req, res) => {
+
+  res.status(200).json({ msg: 'The artist has been added to the given movie'})
+}
+
+module.exports = { add, update, remove, addToMovie }
