@@ -66,7 +66,16 @@ const remove = async (req, res) => {
 
 }
 
-const addToMovie = (req, res) => {
+const addToMovie = async (req, res) => {
+
+  const { movieId } = req.body
+  const { artist } = req
+
+  const movie = await Movie.findById(movieId)
+  if (!movie)
+    return res.status(400).json({ msg: 'Given movie does not exist'})
+
+  
 
   res.status(200).json({ msg: 'The artist has been added to the given movie'})
 }

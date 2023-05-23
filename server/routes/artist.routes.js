@@ -5,6 +5,8 @@ const { fieldValidation } = require('../middlewares/field-validation')
 const Artist = require('../database/models/Artist')
 const { attachNationality } = require('../middlewares/attach-nationality')
 const { artistAlreadyExists } = require('../middlewares/artist-already-exists')
+const { artistFind } = require('../middlewares/artist-find')
+const { movieFind } = require('../middlewares/movie-find')
 
 const router = Router()
 
@@ -79,7 +81,10 @@ router.delete('/:id',
 
 router.patch('/add/:artistId/movie/:movieId',
   check('artistId', 'Artist id is invalid').isMongoId(),
+  check('movieId', 'Movie id is invalid').isMongoId(),
   fieldValidation,
+  artistFind,
+  movieFind,
   addToMovie)
 
 module.exports = router

@@ -1,4 +1,5 @@
 const request = require('supertest')
+const mongoose = require('mongoose')
 const server = require('../model/Server')
 const Artist = require('../database/models/Artist')
 const Movie = require('../database/models/Movie')
@@ -40,7 +41,7 @@ describe('add new artist to movie cast tests', () => {
 
     const artist = getArtistData(2)
     artist.nationality = await Country.findOne({ name: artist.nationality })._id
-    const artistData = await Artist.create(artist)
+    await Artist.create(artist)
 
      await request(app)
        .patch(`/api/artist/add/invalid-id/movie/${ movieData._id.toString() }`)
@@ -50,7 +51,43 @@ describe('add new artist to movie cast tests', () => {
        })
    })
 
-  // test add unexistent artist to a valid movie
-  // test add existent artist to an invalid movie
-  // test add existent artist to an unexistent movie
+  test('add unexistent artist to a valid movie', async () => {
+    const validId = new mongoose.Types.ObjectId()
+
+    await request(app)
+      .patch(`/api/artist/add/${ validId }/movie/${ movieData._id.toString() }`)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.msg).toBe('Given artist does not exist')
+      })
+  })
+
+  test('add existent artist to an invalid movie', async () => {
+
+    const artist = getArtistData(2)
+    artist.nationality = await Country.findOne({ name: artist.nationality })._id
+    const newArtist = await Artist.create(artist)
+
+    await request(app)
+      .patch(`/api/artist/add/${ newArtist._id.toString() }/movie/invalid-movie`)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.errors[0].msg).toBe('Movie id is invalid')
+      })      
+  })
+
+  test('add existent artist to an unexistent movie', async () => {
+    const validId = new mongoose.Types.ObjectId()
+
+    const artist = getArtistData(2)
+    artist.nationality = await Country.findOne({ name: artist.nationality })._id
+    const newArtist = await Artist.create(artist)
+
+    await request(app)
+      .patch(`/api/artist/add/${ newArtist._id.toString() }/movie/${ validId }`)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.msg).toBe('Given movie does not exist')
+      })
+  })
 })
