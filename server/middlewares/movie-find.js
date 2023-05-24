@@ -6,8 +6,9 @@ const movieFind = async (req, res, next) => {
 
   const movie = await Movie.findById(movieId)
 
-  if (!movie)
+  if (!movie) {
     return res.status(400).json({ msg: 'Given movie does not exist' })
+  }
 
   req.movie = movie
 

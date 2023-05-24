@@ -15,7 +15,7 @@ const { getArtistData } = require('./samples/artist-data-sample')
 
 
 const app = server.getApp()
-
+let movieData
 
 beforeAll( async () => {  
   await Country.insertMany(countryData())
@@ -90,4 +90,44 @@ describe('add new artist to movie cast tests', () => {
         expect(res.body.msg).toBe('Given movie does not exist')
       })
   })
+
+  test('add one artist to movie cast', async () => {
+
+    const artist = getArtistData(2)
+    artist.nationality = await Country.findOne({ name: artist.nationality })._id
+    const newArtist = await Artist.create(artist)
+
+    const movie = await Movie.findById(movieData._id.toString()).populate('cast')
+    expect(movie.cast.length).toBe(0)
+
+    await request(app)
+      .patch(`/api/artist/add/${ newArtist._id.toString() }/movie/${ movie._id.toString() }`)
+      .expect(200)
+
+    const dbMovie = await Movie.findById(movieData._id.toString()).populate('cast')
+    expect(dbMovie.cast.length).toBe(1)
+  })
+
+  test('add artist repeated artist to cast must not be possible', async () => {
+
+    const artist = getArtistData(0)
+    artist.nationality = await Country.findOne({ name: artist.nationality })._id
+    const newArtist = await Artist.create(artist)
+
+    const movie = await Movie.findById(movieData._id)
+    movie.cast.push(newArtist)
+    await movie.save()
+    expect(movie.cast.length).toBe(1)
+
+    await request(app)
+      .patch(`/api/artist/add/${ newArtist._id.toString() }/movie/${ movie._id.toString() }`)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.msg).toBe('The artist is already part of the cast')
+      })
+
+    const unafectedMovie = await Movie.findById(movieData._id)
+    expect(unafectedMovie.cast.length).toBe(1)
+  })
+
 })

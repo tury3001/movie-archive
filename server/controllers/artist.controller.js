@@ -66,16 +66,17 @@ const remove = async (req, res) => {
 
 }
 
-const addToMovie = async (req, res) => {
+const addToMovie = async (req, res) => {  
 
-  const { movieId } = req.body
-  const { artist } = req
+  const { artist, movie } = req
 
-  const movie = await Movie.findById(movieId)
-  if (!movie)
-    return res.status(400).json({ msg: 'Given movie does not exist'})
+  const exist = await Movie.find({ cast: { $in: [ artist ] } });
 
-  
+  if (exist.length > 0)
+    return res.status(400).json({ msg: 'The artist is already part of the cast' })
+
+  movie.cast.push(artist)
+  await movie.save()
 
   res.status(200).json({ msg: 'The artist has been added to the given movie'})
 }
