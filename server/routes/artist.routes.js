@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
-const { add, update, remove, addToMovie } = require('../controllers/artist.controller')
+const { add, update, remove, addToMovie, removeFromMovie } = require('../controllers/artist.controller')
 const { fieldValidation } = require('../middlewares/field-validation')
 const Artist = require('../database/models/Artist')
 const { attachNationality } = require('../middlewares/attach-nationality')
@@ -86,5 +86,13 @@ router.patch('/add/:artistId/movie/:movieId',
   artistFind,
   movieFind,
   addToMovie)
+
+router.patch('/remove/:artistId/movie/:movieId',
+  check('artistId', 'Artist id is invalid').isMongoId(),
+  check('movieId', 'Movie id is invalid').isMongoId(),
+  fieldValidation,
+  artistFind,
+  movieFind,
+  removeFromMovie)
 
 module.exports = router

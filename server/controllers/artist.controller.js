@@ -81,4 +81,9 @@ const addToMovie = async (req, res) => {
   res.status(200).json({ msg: 'The artist has been added to the given movie'})
 }
 
-module.exports = { add, update, remove, addToMovie }
+const removeFromMovie = async (req, res) => {
+
+  res.status(200).json({ msg: 'The artist has been removed from the movie'})
+}
+
+module.exports = { add, update, remove, addToMovie, removeFromMovie }
