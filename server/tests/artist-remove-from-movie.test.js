@@ -16,6 +16,7 @@ const { getArtistData } = require('./samples/artist-data-sample')
 
 const app = server.getApp()
 let movieData
+let artist1, artist2
 
 beforeAll( async () => {  
   await Country.insertMany(countryData())
@@ -30,13 +31,13 @@ afterAll(async () => {
 beforeEach( async () => {
   movieData = await insertMovieInDB()
 
-  const artist1 = getArtistData(2)
+  artist1 = getArtistData(2)
   artist1.nationality = await Country.findOne({ name: artist1.nationality })._id
-  await Artist.create(artist1)
+  artist1 = await Artist.create(artist1)
 
-  const artist2 = getArtistData(1)
+  artist2 = getArtistData(1)
   artist2.nationality = await Country.findOne({ name: artist2.nationality })._id
-  await Artist.create(artist2)
+  artist2 = await Artist.create(artist2)
 
   const movie = await Movie.findById(movieData._id).populate('cast')
   movie.cast.push(artist1)
@@ -98,5 +99,19 @@ describe('remove an artist from the movie cast', () => {
       .expect( res => {
         expect(res.body.msg).toBe('Given movie does not exist')
       })
+  })
+
+  test('remove an artist from a movie cast', async () => {
+
+    let movie = await Movie.findById(movieData._id)
+    await movie.save()
+
+    await request(app)
+      .patch(`/api/artist/remove/${ artist2._id.toString() }/movie/${ movieData._id.toString() }`)
+      .expect(200)
+
+    const movieDb = await Movie.findById(movieData._id).populate('cast')
+    expect(movieDb.cast.length).toBe(1)
+    expect(movieDb.cast[0].name).toBe('Christopher Nolan')
   })
 })

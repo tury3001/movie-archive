@@ -83,6 +83,12 @@ const addToMovie = async (req, res) => {
 
 const removeFromMovie = async (req, res) => {
 
+  const { artist, movie } = req
+
+  const idx = movie.cast.findIndex( e => e._id === artist._id)
+  movie.cast.splice(idx, 1)
+  await movie.save()
+
   res.status(200).json({ msg: 'The artist has been removed from the movie'})
 }
 
