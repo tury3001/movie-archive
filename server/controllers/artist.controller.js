@@ -78,18 +78,22 @@ const addToMovie = async (req, res) => {
   movie.cast.push(artist)
   await movie.save()
 
-  res.status(200).json({ msg: 'The artist has been added to the given movie'})
+  res.status(200).json({ msg: 'The artist has been added to the given movie' })
 }
 
 const removeFromMovie = async (req, res) => {
 
   const { artist, movie } = req
 
-  const idx = movie.cast.findIndex( e => e._id === artist._id)
+  const idx = movie.cast.findIndex( e => e._id.toString() === artist._id.toString())
+
+  if (idx === -1)
+    return res.status(400).json({ msg: 'The artist is not in the movie cast' })
+
   movie.cast.splice(idx, 1)
   await movie.save()
 
-  res.status(200).json({ msg: 'The artist has been removed from the movie'})
+  res.status(200).json({ msg: 'The artist has been removed from the movie' })
 }
 
 module.exports = { add, update, remove, addToMovie, removeFromMovie }

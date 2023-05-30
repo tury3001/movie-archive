@@ -4,7 +4,7 @@ const movieFind = async (req, res, next) => {
 
   const { movieId } = req.params
 
-  const movie = await Movie.findById(movieId)
+  const movie = await Movie.findById(movieId).populate('cast')
 
   if (!movie) {
     return res.status(400).json({ msg: 'Given movie does not exist' })

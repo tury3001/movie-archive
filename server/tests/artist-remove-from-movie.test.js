@@ -103,15 +103,29 @@ describe('remove an artist from the movie cast', () => {
 
   test('remove an artist from a movie cast', async () => {
 
-    let movie = await Movie.findById(movieData._id)
-    await movie.save()
+    const movie = await Movie.findById(movieData._id.toString()).populate('cast')
+    const artistToRemove = movie.cast[1]
 
     await request(app)
-      .patch(`/api/artist/remove/${ artist2._id.toString() }/movie/${ movieData._id.toString() }`)
+      .patch(`/api/artist/remove/${ artistToRemove._id.toString() }/movie/${ movieData._id.toString() }`)
       .expect(200)
 
     const movieDb = await Movie.findById(movieData._id).populate('cast')
     expect(movieDb.cast.length).toBe(1)
     expect(movieDb.cast[0].name).toBe('Christopher Nolan')
+  })
+
+  test('remove an artist from a movie that is not part of the cast', async () => {
+
+    let artist0 = getArtistData(0)
+    artist0.nationality = await Country.findOne({ name: artist0.nationality })._id
+    artist0 = await Artist.create(artist0)
+    
+    await request(app)
+      .patch(`/api/artist/remove/${ artist0._id.toString() }/movie/${ movieData._id.toString() }`)
+      .expect(400)
+      .expect( res => {
+        expect(res.body.msg).toBe('The artist is not in the movie cast')
+      })
   })
 })
