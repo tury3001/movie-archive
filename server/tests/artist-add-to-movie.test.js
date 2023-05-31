@@ -12,6 +12,7 @@ const { languageData } = require('../database/seeders/seed-language')
 const { insertMovieInDB } = require('./utils')
 const { dbDisconnect } = require('../database/config')
 const { getArtistData } = require('./samples/artist-data-sample')
+const getMovieData = require('./samples/movie-data-sample')
 
 
 const app = server.getApp()
@@ -28,7 +29,8 @@ afterAll(async () => {
 })
 
 beforeEach( async () => {
-  movieData = await insertMovieInDB()
+  const data = getMovieData()
+  movieData = await insertMovieInDB(data)
 })
 
 afterEach(async () => {

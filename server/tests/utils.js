@@ -4,11 +4,10 @@ const Country = require('../database/models/Country')
 const Artist = require('../database/models/Artist')
 const Language = require('../database/models/Language')
 const Genre = require('../database/models/Genre')
-const getMovieData = require('./samples/movie-data-sample')
+
 const { getArtistData } = require('./samples/artist-data-sample')
 
-async function insertMovieInDB () {
-  let movieData = getMovieData()
+async function insertMovieInDB ( movieData ) {
 
   let artist = getArtistData(0)
   let country = await Country.findOne({ name: artist.nationality })

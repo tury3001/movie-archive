@@ -28,7 +28,8 @@ afterAll(async () => {
 })
 
 beforeEach( async () => {
-  movieData = await insertMovieInDB()
+  const data = getMovieData()
+  movieData = await insertMovieInDB(data)
 })
 
 afterEach(async () => {
