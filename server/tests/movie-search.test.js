@@ -1,4 +1,5 @@
 const server = require('../model/Server')
+const request = require('supertest')
 const { dbDisconnect } = require('../database/config')
 const Country = require('../database/models/Country')
 const Language = require('../database/models/Language')
@@ -47,9 +48,15 @@ describe('test movie search', () => {
     expect(movies[4].title).toBe("Blade")
   })
 
-//   // test('find movie by title that does not exist, retrieve zero results', async () => {
-
-//   // })
+  test('find movie by title that does not exist, retrieve zero results', async () => {
+    
+    await request(app)
+      .get(`/api/search/dfsdf`)
+      .expect(200)
+      .expect( res => {
+        expect(res.body.results.length).toBe(0)
+      })
+  })
 //   // test('find movie by title that exist, retrieve one result')
 //   // test('find movie by title that exist, retrieve more than one result')
 

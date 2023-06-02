@@ -70,4 +70,10 @@ const remove = async (req, res) => {
   res.status(200).json({ msg: 'Movie has been deleted' })
 }
 
-module.exports = { add, update, remove }
+const search = async (req, res) => {
+  const { q } = req.params
+
+  res.status(200).json({ results: [] })
+}
+
+module.exports = { add, update, remove, search }
