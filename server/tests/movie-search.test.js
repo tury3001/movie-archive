@@ -57,7 +57,25 @@ describe('test movie search', () => {
         expect(res.body.results.length).toBe(0)
       })
   })
-//   // test('find movie by title that exist, retrieve one result')
-//   // test('find movie by title that exist, retrieve more than one result')
 
+  test('find movie by title that exist, retrieve one result', async () => {
+    await request(app)
+      .get(`/api/search/runner`)
+      .expect(200)
+      .expect( res => {
+        expect(res.body.results.length).toBe(1)
+        expect(res.body.results[0].title).toBe('Blade Runner')
+      })
+  })
+
+  test('find movie by title that exist, retrieve more than one result', async () => {
+    await request(app)
+      .get(`/api/search/godfather`)
+      .expect(200)
+      .expect( res => {
+        expect(res.body.results.length).toBe(2)
+        expect(res.body.results[0].title).toBe('The Godfather')
+        expect(res.body.results[1].title).toBe('The Godfather II')
+      })
+  })
 })

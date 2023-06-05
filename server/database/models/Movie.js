@@ -33,4 +33,6 @@ const MovieSchema = new Schema({
   tags: [String]  
 })
 
+MovieSchema.path('title').index({ text : true });
+
 module.exports = model('Movie', MovieSchema)

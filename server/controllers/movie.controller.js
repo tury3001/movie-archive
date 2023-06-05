@@ -73,7 +73,9 @@ const remove = async (req, res) => {
 const search = async (req, res) => {
   const { q } = req.params
 
-  res.status(200).json({ results: [] })
+  const movies = await Movie.find({ $text: { $search: q }})
+
+  res.status(200).json({ results: movies })
 }
 
 module.exports = { add, update, remove, search }
