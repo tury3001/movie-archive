@@ -204,8 +204,8 @@ function getArtistData() {
     name: 'Hugh Jackman',
     gender: 'M',
     bornDate: '1968-10-12',
-    bornPlace: 'Sydney, New South Wales, Australia',
-    nationality: 'Argentina',
+    bornPlace: 'Manhattan, New York, United States',
+    nationality: 'United States',
     bio: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate nostrum enim voluptas architecto suscipit dicta natus maiores nemo similique fuga ullam molestiae cumque ipsa ad, distinctio in dignissimos explicabo eius.'
   }
 }

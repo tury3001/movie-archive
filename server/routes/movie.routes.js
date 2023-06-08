@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
-const { add, update, remove } = require('../controllers/movie.controller')
+const { add, update, remove, fetch } = require('../controllers/movie.controller')
 const { fieldValidation } = require('../middlewares/field-validation')
 const { validateCountries } = require('../middlewares/countries-validation')
 const { validateLanguages } = require('../middlewares/languages-validation')
@@ -10,9 +10,11 @@ const { attachCast } = require('../middlewares/attach-cast')
 
 const router = Router()
 
-router.get('/', (req, res) => {
-  res.status(200).json({ msg: 'ok' })
-})
+router.get('/:id',
+  check('id', 'Given id is invalid').isMongoId(),
+  fieldValidation,
+  fetch
+)
 
 router.post('/',
   check('title', 'Title can\'t be empty')

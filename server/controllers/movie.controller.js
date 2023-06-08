@@ -1,5 +1,19 @@
 const Movie = require('../database/models/Movie')
 
+const fetch = async (req, res) => {
+
+  const movie = await Movie.findById(req.params.id)
+                           .populate('cast')
+                           .populate('genres')
+                           .populate('languages')
+                           .populate('countries')
+                           .populate('director')
+  if (!movie)  
+    return res.status(400).json({ msg: 'Movie does not exist' })
+
+  res.status(200).json(movie)
+} 
+
 const add = async (req, res) => {
   const { title, year, director, cast, genres, countries, languages, comment, synopsis, tags } = req.body
 
@@ -78,4 +92,4 @@ const search = async (req, res) => {
   res.status(200).json({ results: movies })
 }
 
-module.exports = { add, update, remove, search }
+module.exports = { fetch, add, update, remove, search }
