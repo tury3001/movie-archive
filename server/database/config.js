@@ -3,8 +3,11 @@ const { MongoMemoryServer } = require('mongodb-memory-server')
 let mongod
 
 const dbConnect = async () => {
+
   let uri = process.env.MONGODB_CNN
   let conn
+
+  console.log(`>> Conectando a ${ process.env.MONGODB_CNN }...`)
 
   try {
     if (process.env.NODE_ENV === 'test') {
@@ -18,7 +21,7 @@ const dbConnect = async () => {
         pass: process.env.MONGO_DB_PASSWORD
       })
 
-      console.log(`Connection established with MongoDB - Host: ${conn.connection.host}`)
+      console.log(`>> Connection established with MongoDB - Host: ${conn.connection.host}`)
     }
   } catch (error) {
     console.error(error)

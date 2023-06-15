@@ -1,21 +1,18 @@
-const mongoose = require('mongoose')
-
 const Genre = require('../models/Genre')
 const Country = require('../models/Country')
 const Language = require('../models/Language')
+const Artist = require('../models/Artist')
 
 const { genreData } = require('./seed-genre')
 const { countryData } = require('./seed-country')
 const { languageData } = require('./seed-language')
-
-const uri = 'mongodb://localhost:27017/movie-archive'
-const user = 'mvarchive'
-const pass = 'z59mHfsaZbyc4Kzh'
+const { artistData } = require('./seed-artists')
+const { movieData } = require('./seed-movie')
+const Movie = require('../models/Movie')
 
 class Seeder {
   async seedAll () {
     try {
-      await this.connect()
 
       console.log('--> Seeding genres...')
       await Genre.deleteMany({})
@@ -27,26 +24,24 @@ class Seeder {
 
       console.log('--> Seeding languages...')
       await Language.deleteMany({})
-      await Language.insertMany(languageData())
+      await Language.insertMany(languageData())      
+
+      console.log('--> Seeding artists...')
+      await Artist.deleteMany({})
+      const artists = await Artist.insertMany(artistData())
+
+      const director = artists[2]._id
+      let cast = []
+      cast.push(artists[0]._id, artists[1]._id)
+
+      console.log('--> Seeding movies...')
+      await Movie.deleteMany({})
+      await Movie.insertMany(movieData(director, cast))
+
     } catch (error) {
       console.log(error)
-    } finally {
-      await this.disconnect()
     }
-  }
-
-  async connect () {
-    await mongoose.connect(uri, {
-      authSource: 'admin',
-      user,
-      pass
-    })
-  }
-
-  async disconnect () {
-    await mongoose.connection.close()
   }
 }
 
-const seeder = new Seeder()
-seeder.seedAll()
+module.exports = { Seeder }
