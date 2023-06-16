@@ -47,9 +47,9 @@ DEV_BASE_URL=http://localhost:3000
 
 `nodemon server/index.js`
 
-## Seed the db
+## Run migrations and seeders
 
-`$ node ./server/databases/seed/Seeder.js`
+`$ node ./server/scripts/migration.js`
 
 ## Run server tests
 
