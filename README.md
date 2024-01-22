@@ -5,7 +5,7 @@
 Movie Archive is a basic CRUD system for films. It's was developed to serve as a testing API for frontend projects.
 
 ## Stack
-* JavaScript
+* Node.js
 * Express
 * MongoDB
 
@@ -16,42 +16,49 @@ Movie Archive is a basic CRUD system for films. It's was developed to serve as a
 - Genres: GET
 - Languages: GET
 
-## Set development environment
+## Development environment
 
-### Set .env files
+### Run MongoDB with Docker
+
+#### Set .env files
 
 Copy `.env.example` to `.env` and set the constants values.
 
 ```
 MONGODB_CNN=mongodb://mongouser:password@mongo:27017/movie-archive            
+MONGO_HOST=localhost
 MONGO_PORT=27017
 MONGO_DB_NAME=movie-archive
-MONGO_DB_USER=mongouser
-MONGO_DB_PASSWORD=password
 MONGO_ROOT_USERNAME=mvarchiveroot
 MONGO_ROOT_PASSWORD=rootpassword
 NODE_ENV=development
 
 DEV_BASE_URL=http://localhost:3000
-
-NODE_LOCAL_PORT=6868
-NODE_DOCKER_PORT=5000
 ```
 
-### Run development server
+#### Start Docker server
 
-#### Start Docker server for development
-
-`$ docker compose up`
+`docker compose up`
 
 #### Stop Docker server
 
-`$ docker compose down`
+`docker compose down`
 
 ### Run migrations and seeders
 
-`$ node ./server/scripts/migration.js`
+Create the collections in the DB and populate the static collections with its data.
+There are seeders for genres, languages and countries.
 
-### Run server tests
+`node ./server/scripts/migration.js`
+
+### Run development server with Nodemon
+
+`npm run start`
+
+## Testing
+
+### Run tests
+
+Tests don't need to use MongoDB. They use in-memory database.
 
 `npm run tests`

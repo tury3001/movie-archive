@@ -10,23 +10,3 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_ROOT_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_ROOT_PASSWORD
-
-  node:
-    depends_on:
-      - mongo
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
-    volumes:
-      - ./:/usr/src/app
-    restart: always
-    env_file: ./.env
-    ports:
-      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
-    environment:
-      - DB_HOST=mongo
-      - DB_USER=$MONGO_ROOT_USERNAME
-      - DB_PASSWORD=$MONGO_ROOT_PASSWORD
-    command: nodemon index.js
-    stdin_open: true
-    tty: true
