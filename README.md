@@ -14,9 +14,17 @@ Movie Archive is a basic CRUD system for films
 Copy `.env.example` to `.env` and set the constants values.
 
 ```
+MONGODB_CNN=mongodb://mongouser:password@mongo:27017/movie-archive            
 MONGO_PORT=27017
-MONGO_ROOT_USERNAME=mvarchive
-MONGO_ROOT_PASSWORD=password
+MONGO_DB_NAME=movie-archive
+MONGO_DB_USER=mongouser
+MONGO_DB_PASSWORD=password
+MONGO_ROOT_USERNAME=mvarchiveroot
+MONGO_ROOT_PASSWORD=rootpassword
+NODE_ENV=development
+
+DEV_BASE_URL=http://localhost:3000
+
 NODE_LOCAL_PORT=6868
 NODE_DOCKER_PORT=5000
 ```
