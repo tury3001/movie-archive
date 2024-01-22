@@ -1,5 +1,5 @@
 require('dotenv').config()
 
-const server = require('./model/Server.js')
+const server = require('./src/model/Server.js')
 
 server.listen()
