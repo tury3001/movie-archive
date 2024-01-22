@@ -2,14 +2,23 @@
 
 ## What's this?
 
-Movie Archive is a basic CRUD system for films
+Movie Archive is a basic CRUD system for films. It's was developed to serve as a testing API for frontend projects.
 
 ## Stack
 * JavaScript
 * Express
 * MongoDB
 
-## Set .env files
+## Endpoints overview
+- Movies: GET, POST, PATCH, DELETE
+- Artists: GET, POST, PATCH, DELETE
+- Countries: GET
+- Genres: GET
+- Languages: GET
+
+## Set development environment
+
+### Set .env files
 
 Copy `.env.example` to `.env` and set the constants values.
 
@@ -29,20 +38,20 @@ NODE_LOCAL_PORT=6868
 NODE_DOCKER_PORT=5000
 ```
 
-## Run development server
+### Run development server
 
-### Start Docker server for development
+#### Start Docker server for development
 
 `$ docker compose up`
 
-### Stop Docker server
+#### Stop Docker server
 
 `$ docker compose down`
 
-## Run migrations and seeders
+### Run migrations and seeders
 
 `$ node ./server/scripts/migration.js`
 
-## Run server tests
+### Run server tests
 
 `npm run tests`
