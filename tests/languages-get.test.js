@@ -1,8 +1,8 @@
 const request = require('supertest')
-const server = require('../model/Server')
-const { dbDisconnect } = require('../database/config')
-const { languageData } = require('../database/seeders/seed-language')
-const Language = require('../database/models/Language')
+const server = require('../src/model/Server')
+const { dbDisconnect } = require('../src/database/config')
+const { languageData } = require('../src/database/seeders/seed-language')
+const Language = require('../src/database/models/Language')
 
 const app = server.getApp()
 

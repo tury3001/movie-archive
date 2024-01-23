@@ -1,8 +1,8 @@
 const request = require('supertest')
-const server = require('../model/Server')
-const Genre = require('../database/models/Genre')
-const { genreData } = require('../database/seeders/seed-genre')
-const { dbDisconnect } = require('../database/config')
+const server = require('../src/model/Server')
+const Genre = require('../src/database/models/Genre')
+const { genreData } = require('../src/database/seeders/seed-genre')
+const { dbDisconnect } = require('../src/database/config')
 
 const app = server.getApp()
 

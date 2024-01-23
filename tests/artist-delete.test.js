@@ -1,15 +1,15 @@
 
 const request = require('supertest')
-const Artist = require('../database/models/Artist')
-const Country = require('../database/models/Country')
-const Movie = require('../database/models/Movie')
-const Server = require('../model/Server')
+const Artist = require('../src/database/models/Artist')
+const Country = require('../src/database/models/Country')
+const Movie = require('../src/database/models/Movie')
+const Server = require('../src/model/Server')
 
 const { getArtistData } = require('./samples/artist-data-sample')
 const getMovieData = require('./samples/movie-data-sample')
-const { countryData } = require('../database/seeders/seed-country')
+const { countryData } = require('../src/database/seeders/seed-country')
 
-const { dbDisconnect } = require('../database/config')
+const { dbDisconnect } = require('../src/database/config')
 
 const app = Server.getApp()
 

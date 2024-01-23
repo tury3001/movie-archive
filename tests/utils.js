@@ -1,9 +1,9 @@
 
-const Movie = require('../database/models/Movie')
-const Country = require('../database/models/Country')
-const Artist = require('../database/models/Artist')
-const Language = require('../database/models/Language')
-const Genre = require('../database/models/Genre')
+const Movie = require('../src/database/models/Movie')
+const Country = require('../src/database/models/Country')
+const Artist = require('../src/database/models/Artist')
+const Language = require('../src/database/models/Language')
+const Genre = require('../src/database/models/Genre')
 
 const { getArtistData } = require('./samples/artist-data-sample')
 

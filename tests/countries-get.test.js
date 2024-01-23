@@ -1,8 +1,8 @@
 
-const Country = require('../database/models/Country')
-const { dbDisconnect } = require('../database/config')
+const Country = require('../src/database/models/Country')
+const { dbDisconnect } = require('../src/database/config')
 const request = require('supertest')
-const server = require('../model/Server')
+const server = require('../src/model/Server')
 
 const app = server.getApp()
 

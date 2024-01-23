@@ -1,9 +1,9 @@
 const request = require('supertest')
-const server = require('../model/Server')
-const { dbDisconnect } = require('../database/config')
-const Artist = require('../database/models/Artist')
-const Country = require('../database/models/Country')
-const { countryData } = require('../database/seeders/seed-country')
+const server = require('../src/model/Server')
+const { dbDisconnect } = require('../src/database/config')
+const Artist = require('../src/database/models/Artist')
+const Country = require('../src/database/models/Country')
+const { countryData } = require('../src/database/seeders/seed-country')
 
 const app = server.getApp()
 
