@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Artist } from "../database/models/Artist";
 
-const artistAlreadyExists = async (
+export const artistAlreadyExists = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -16,5 +16,3 @@ const artistAlreadyExists = async (
 
   next();
 };
-
-module.exports = { artistAlreadyExists };

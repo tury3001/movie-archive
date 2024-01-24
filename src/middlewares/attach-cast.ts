@@ -1,17 +1,19 @@
+import mongoose from 'mongoose';
+import { Artist, IArtist } from '../database/models/Artist';
+import { NextFunction, Request, Response } from 'express';
 
-const Artist = require('../database/models/Artist')
-const mongoose = require('mongoose')
-
-const attachCast = async (req, res, next) => {
+export const attachCast = async (req: Request, res: Response, next: NextFunction) => {
 
   if (req.body.cast && req.body.cast.length > 0) {
 
     if (req.body.cast.some( id => !mongoose.isValidObjectId(id)))
       return res.status(400).json({ msg: 'Given cast has invalid ids'})
     
-    let artists = [];
+    let artists: IArtist[] = [];
     for (let artistId of req.body.cast) {
-      artists.push(await Artist.findById(artistId))
+      const artist: IArtist | null = await Artist.findById(artistId);
+      if (artist)
+        artists.push(artist);
     }
 
     if (artists.some( artist => artist === null))
@@ -22,5 +24,3 @@ const attachCast = async (req, res, next) => {
 
   next()
 }
-
-module.exports = { attachCast }
