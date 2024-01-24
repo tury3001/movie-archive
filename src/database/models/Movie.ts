@@ -1,4 +1,21 @@
-const { Schema, model } = require('mongoose')
+import { Schema, model } from "mongoose";
+import { IArtist } from "./Artist";
+import { IGenre } from './Genre';
+import { ICountry } from "./Country";
+import { ILanguage } from "./Language";
+
+export interface IMovie {
+  title: string,
+  year: number,
+  director?: IArtist,
+  cast?: IArtist[],
+  genres?: IGenre[],
+  countries?: ICountry[],
+  languages?: ILanguage[],
+  synopsis: string,
+  comment: string,
+  tags: string[]
+}
 
 const MovieSchema = new Schema({
   title: String,
@@ -35,4 +52,4 @@ const MovieSchema = new Schema({
 
 MovieSchema.path('title').index({ text : true });
 
-module.exports = model('Movie', MovieSchema)
+export const Movie = model<IMovie>('Movie', MovieSchema)
