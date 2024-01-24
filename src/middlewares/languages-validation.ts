@@ -1,16 +1,17 @@
-const Language = require('../database/models/Language')
+import { Request, Response, NextFunction } from "express";
+import { ILanguage, Language } from "../database/models/Language";
 
-const validateLanguages = async (req, res, next) => {
+export const validateLanguages = async (req: Request, res: Response, next: NextFunction) => {
 
   if (req.body.languages !== undefined) {
 
     req.body.languages = [ ...new Set( req.body.languages )]
 
-    let allLanguagesExist = true;
-    let language;
+    let allLanguagesExist: boolean = true;
+    let language: ILanguage | null;
     
-    let objectSchemaLanguages = []
-    for (languageName of req.body.languages) {
+    let objectSchemaLanguages: ILanguage[] = []
+    for (let languageName of req.body.languages) {
       language = await Language.findOne({ name: languageName })
 
       if (!language)
@@ -27,5 +28,3 @@ const validateLanguages = async (req, res, next) => {
 
   next()
 }
-
-module.exports = { validateLanguages }

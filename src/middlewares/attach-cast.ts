@@ -6,7 +6,7 @@ export const attachCast = async (req: Request, res: Response, next: NextFunction
 
   if (req.body.cast && req.body.cast.length > 0) {
 
-    if (req.body.cast.some( id => !mongoose.isValidObjectId(id)))
+    if (req.body.cast.some( (id: string) => !mongoose.isValidObjectId(id)))
       return res.status(400).json({ msg: 'Given cast has invalid ids'})
     
     let artists: IArtist[] = [];

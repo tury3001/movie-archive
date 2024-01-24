@@ -1,16 +1,17 @@
-const Country = require('../database/models/Country')
+import { NextFunction, Request, Response } from "express";
+import { Country, ICountry } from "../database/models/Country";
 
-const validateCountries = async (req, res, next) => {
+export const validateCountries = async (req: Request, res: Response, next: NextFunction) => {
 
   if (req.body.countries !== undefined) {
 
     req.body.countries = [ ...new Set( req.body.countries )]
 
-    let allCountriesExist = true;
-    let country;
+    let allCountriesExist: boolean = true;
+    let country: ICountry | null;
     
-    let objectSchemaCountries = []
-    for (countryName of req.body.countries) {
+    let objectSchemaCountries: ICountry[] = []
+    for (let countryName of req.body.countries) {
       country = await Country.findOne({ name: countryName })
 
       if (!country)
@@ -27,5 +28,3 @@ const validateCountries = async (req, res, next) => {
 
   next()
 }
-
-module.exports = { validateCountries }
