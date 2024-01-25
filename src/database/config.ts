@@ -1,9 +1,11 @@
-const mongoose = require('mongoose')
-const { MongoMemoryServer } = require('mongodb-memory-server')
-let mongod
+import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
-const dbConnect = async () => {
-  try {
+let mongod: MongoMemoryServer;
+
+export const dbConnect = async () => {
+  try {    
+    let conn;
     if (process.env.NODE_ENV === 'test') {
       mongod = await MongoMemoryServer.create()
       const testUri = mongod.getUri()
@@ -27,7 +29,7 @@ const dbConnect = async () => {
   }
 }
 
-const dbDisconnect = async () => {
+export const dbDisconnect = async () => {
   try {
     await mongoose.connection.close()
     if (mongod) {
@@ -37,5 +39,3 @@ const dbDisconnect = async () => {
     console.log(err)
   }
 }
-
-module.exports = { dbConnect, dbDisconnect }

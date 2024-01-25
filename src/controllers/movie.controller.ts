@@ -1,6 +1,7 @@
-const Movie = require('../database/models/Movie')
+import { Request, Response } from 'express';
+import { Movie } from "../database/models/Movie";
 
-const fetch = async (req, res) => {
+export const fetch = async (req: Request, res: Response) => {
 
   const movie = await Movie.findById(req.params.id)
                            .populate('cast')
@@ -14,7 +15,7 @@ const fetch = async (req, res) => {
   res.status(200).json(movie)
 } 
 
-const add = async (req, res) => {
+export const add = async (req: Request, res: Response) => {
   const { title, year, director, cast, genres, countries, languages, comment, synopsis, tags } = req.body
 
   const data = {
@@ -41,7 +42,7 @@ const add = async (req, res) => {
   res.status(201).json({ msg: 'Movie has been saved' })
 }
 
-const update = async (req, res) => {
+export const update = async (req: Request, res: Response) => {
 
   const { title, year, director, synopsis, comment, genres, countries, languages, tags } = req.body
 
@@ -71,7 +72,7 @@ const update = async (req, res) => {
   res.status(200).json({ msg: 'Movie updated' })
 }
 
-const remove = async (req, res) => {
+export const remove = async (req: Request, res: Response) => {
 
   const { id } = req.params
 
@@ -80,17 +81,15 @@ const remove = async (req, res) => {
   if (!movie)
     return res.status(400).json({ msg: 'Given movie does not exist'})
 
-  await Movie.findOneAndDelete(id)
+  await Movie.findOneAndDelete({ id })
 
   res.status(200).json({ msg: 'Movie has been deleted' })
 }
 
-const search = async (req, res) => {
+export const search = async (req: Request, res: Response) => {
   const { q } = req.params
 
   const movies = await Movie.find({ $text: { $search: q }})
 
   res.status(200).json({ results: movies })
 }
-
-module.exports = { fetch, add, update, remove, search }

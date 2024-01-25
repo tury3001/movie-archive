@@ -2,10 +2,10 @@
   "name": "movie-archive",
   "version": "1.0.0",
   "description": "A film CRUD with movies, directors, actors and actresses",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "nodemon ./index.js -L",
-    "dev": "concurrently --kill-others \"tsc -w\" \"nodemon",
+    "start": "node ./dist/index.js -L",
+    "dev": "concurrently --kill-others \"tsc -w\" \"nodemon dist/index.js\"",
     "test": "jest --watch --testEnvironment=node --runInBand",
     "seed": "node ./src/database/seeders/seed.js",
     "lint": "eslint . --fix"
@@ -23,6 +23,7 @@
     "nodemon": "^2.0.22"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.6",
     "concurrently": "^8.2.2",

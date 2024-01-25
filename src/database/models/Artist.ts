@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 export interface IArtist {
+  _id?: string,
   name: string,
   gender: string,
   bornDate: Date,

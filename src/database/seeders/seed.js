@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const seed = async () => {
-  const { dbConnect, dbDisconnect } = require("../config");
+  const { dbConnect, dbDisconnect } = require("./dist/database/config");
   const { Seeder } = require("./Seeder");
   
   await dbConnect();

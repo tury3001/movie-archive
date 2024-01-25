@@ -1,16 +1,12 @@
-const { Router } = require('express')
-const { check } = require('express-validator')
-const { add, update, remove, addToMovie, removeFromMovie } = require('../controllers/artist.controller')
-const { fieldValidation } = require('../middlewares/field-validation')
-const Artist = require('../database/models/Artist')
-const { attachNationality } = require('../middlewares/attach-nationality')
-const { artistAlreadyExists } = require('../middlewares/artist-already-exists')
-const { artistFind } = require('../middlewares/artist-find')
-const { movieFind } = require('../middlewares/movie-find')
+import { Router, Response, Request } from "express";
+import { check } from "express-validator";
+import { add, update, remove, addToMovie, removeFromMovie } from "../controllers/artist.controller";
+import { fieldValidation, attachNationality, artistAlreadyExists, artistFind, movieFind } from "../middlewares";
+import { Artist } from "../database/models/Artist";
 
-const router = Router()
+export const router = Router()
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const artist = await Artist.findOne({ _id: req.params.id })
     return res.status(200).json(artist)
@@ -94,5 +90,3 @@ router.patch('/remove/:artistId/movie/:movieId',
   artistFind,
   movieFind,
   removeFromMovie)
-
-module.exports = router

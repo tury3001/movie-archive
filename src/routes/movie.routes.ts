@@ -1,14 +1,9 @@
-const { Router } = require('express')
-const { check } = require('express-validator')
-const { add, update, remove, fetch } = require('../controllers/movie.controller')
-const { fieldValidation } = require('../middlewares/field-validation')
-const { validateCountries } = require('../middlewares/countries-validation')
-const { validateLanguages } = require('../middlewares/languages-validation')
-const { validateGenres } = require('../middlewares/genres-validation')
-const { attachDirector } = require('../middlewares/attach-director')
-const { attachCast } = require('../middlewares/attach-cast')
+import { Router } from "express";
+import { check } from "express-validator";
+import { add, update, remove, fetch } from "../controllers/movie.controller";
+import { fieldValidation, validateCountries, validateLanguages, validateGenres, attachDirector, attachCast } from "../middlewares";
 
-const router = Router()
+export const router: Router = Router();
 
 router.get('/:id',
   check('id', 'Given id is invalid').isMongoId(),
@@ -108,5 +103,3 @@ router.delete('/:id',
   fieldValidation,
   remove
 )
-
-module.exports = router

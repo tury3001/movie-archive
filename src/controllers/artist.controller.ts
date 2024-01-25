@@ -1,7 +1,8 @@
-const Artist = require('../database/models/Artist')
-const Movie = require('../database/models/Movie')
+import { Request, Response } from 'express';
+import { Artist, IArtist } from "../database/models/Artist";
+import { Movie } from "../database/models/Movie";
 
-const add = async (req, res) => {
+export const add = async (req: Request, res: Response) => {
 
   const { name, bornDate, bornPlace, gender, bio, nationality } = req.body
 
@@ -24,7 +25,7 @@ const add = async (req, res) => {
   res.status(201).json({ msg: 'Artist created' })
 }
 
-const update = async (req, res) => {
+export const update = async (req: Request, res: Response) => {
 
   const { name, bornDate, bornPlace, gender, nationality, bio } = req.body
 
@@ -48,7 +49,7 @@ const update = async (req, res) => {
   res.status(204).json({ msg: 'Artist updated' })
 }
 
-const remove = async (req, res) => {
+export const remove = async (req: Request, res: Response) => {
 
   const { id } = req.params
 
@@ -66,7 +67,7 @@ const remove = async (req, res) => {
 
 }
 
-const addToMovie = async (req, res) => {  
+export const addToMovie = async (req: Request, res: Response) => {  
 
   const { artist, movie } = req
 
@@ -81,11 +82,11 @@ const addToMovie = async (req, res) => {
   res.status(200).json({ msg: 'The artist has been added to the given movie' })
 }
 
-const removeFromMovie = async (req, res) => {
+export const removeFromMovie = async (req: Request, res: Response) => {
 
   const { artist, movie } = req
 
-  const idx = movie.cast.findIndex( e => e._id.toString() === artist._id.toString())
+  const idx = movie.cast.findIndex( (e: IArtist) => e._id?.toString() === artist._id.toString())
 
   if (idx === -1)
     return res.status(400).json({ msg: 'The artist is not in the movie cast' })
@@ -95,5 +96,3 @@ const removeFromMovie = async (req, res) => {
 
   res.status(200).json({ msg: 'The artist has been removed from the movie' })
 }
-
-module.exports = { add, update, remove, addToMovie, removeFromMovie }
