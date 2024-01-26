@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+import mongoose from "mongoose";
 
-const data = ( director, cast ) => {
+export const movieData = ( director: string, cast: string[] ) => {
   return [
     {
       title: "Jurassic Park",
@@ -16,5 +16,3 @@ const data = ( director, cast ) => {
     }
   ]
 }
-
-module.exports = { movieData: data }

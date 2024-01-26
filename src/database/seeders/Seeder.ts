@@ -1,18 +1,16 @@
-const Genre = require('../models/Genre')
-const Country = require('../models/Country')
-const Language = require('../models/Language')
-const Artist = require('../models/Artist')
+import { Artist, Language, Country, Genre } from "../models";
+import { movieData, artistData, languageData, countryData, genreData } from "./";
+import { Movie } from "../models/Movie";
+import { dbConnect, dbDisconnect } from '../config';
+import dotenv from 'dotenv';
 
-const { genreData } = require('./seed-genre')
-const { countryData } = require('./seed-country')
-const { languageData } = require('./seed-language')
-const { artistData } = require('./seed-artists')
-const { movieData } = require('./seed-movie')
-const Movie = require('../models/Movie')
+dotenv.config();
 
-class Seeder {
+export class Seeder {
   async seedAll () {
     try {
+
+      await dbConnect();     
 
       console.log('--> Seeding genres...')
       await Genre.deleteMany({})
@@ -38,10 +36,10 @@ class Seeder {
       await Movie.deleteMany({})
       await Movie.insertMany(movieData(director, cast))
 
+      await dbDisconnect();
+
     } catch (error) {
       console.log(error)
     }
   }
 }
-
-module.exports = { Seeder }

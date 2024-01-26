@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+import mongoose from "mongoose";
 
-const data = () => {
+export const artistData = () => {
   return [
     {
       name: 'Patrick Stewart',
@@ -28,5 +28,3 @@ const data = () => {
   }
   ]
 }
-
-module.exports = { artistData: data }

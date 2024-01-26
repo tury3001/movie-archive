@@ -7,7 +7,7 @@
     "start": "node ./dist/index.js -L",
     "dev": "concurrently --kill-others \"tsc -w\" \"nodemon dist/index.js\"",
     "test": "jest --watch --testEnvironment=node --runInBand",
-    "seed": "node ./src/database/seeders/seed.js",
+    "seed": "node ./dist/database/seeders/seed.js",
     "lint": "eslint . --fix"
   },
   "author": "Alejandro A. De Luca",

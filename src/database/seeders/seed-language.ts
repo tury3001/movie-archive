@@ -1,4 +1,4 @@
-const data = () => [
+export const languageData = () => [
   { code: 'aa', name: 'Afar' },
   { code: 'ab', name: 'Abkhazian' },
   { code: 'ae', name: 'Avestan' },
@@ -182,5 +182,3 @@ const data = () => [
   { code: 'zh', name: 'Chinese' },
   { code: 'zu', name: 'Zulu' }
 ]
-
-module.exports = { languageData: data }

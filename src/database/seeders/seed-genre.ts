@@ -1,4 +1,4 @@
-const data = () => {
+export const genreData = () => {
   return [
     { name: 'action' },
     { name: 'adventure' },
@@ -15,5 +15,3 @@ const data = () => {
     { name: 'western' }
   ]
 }
-
-module.exports = { genreData: data }

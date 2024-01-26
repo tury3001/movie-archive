@@ -1,4 +1,4 @@
-const data = () => {
+export const countryData = () => {
   return [
     {
       name: 'Afghanistan',
@@ -978,5 +978,3 @@ const data = () => {
     }
   ]
 }
-
-module.exports = { countryData: data }
