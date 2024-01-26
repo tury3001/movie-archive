@@ -9,4 +9,20 @@ services:
       - $MONGO_PORT:$MONGO_PORT
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_ROOT_USERNAME
-      MONGO_INITDB_ROOT_PASSWORD: $MONGO_ROOT_PASSWORD
+      MONGO_INITDB_ROOT_PASSWORD: $MONGO_ROOT_PASSWORD 
+    volumes:
+      - ./mongodb:/data/db
+
+  seeder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=DEVELOPMENT
+      - MONGO_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - MONGO_HOST=mongo
+    depends_on:
+      - mongo
